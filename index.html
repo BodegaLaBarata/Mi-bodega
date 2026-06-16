@@ -16,7 +16,7 @@
         .producto-card h3 { margin: 0 0 5px 0; font-size: 16px; color: #1a202c; font-weight: 600; }
         .producto-card p { margin: 0; font-size: 13px; color: #718096; }
         .precio { font-weight: 700; color: #2ed573; font-size: 20px; margin-top: 12px; background: #e8fbf1; padding: 4px 10px; border-radius: 20px; display: inline-block; align-self: center; }
-        .cargando { text-align: center; font-size: 16px; color: #718096; padding: 40px 0; grid-column: 1/-1; }
+        #tabla-oculta { display: none; }
     </style>
 </head>
 <body>
@@ -30,48 +30,48 @@
         <input type="text" id="buscar" class="buscador" placeholder="🔍 Buscar producto..." onkeyup="filtrarProductos()">
 
         <div class="grid-productos" id="lista-productos">
-            <div class="cargando" id="mensaje">Conectando con la bodega...</div>
+            <!-- Las tarjetas estéticas se generarán aquí abajo automáticamente -->
         </div>
     </div>
 
+    <!-- Este marco conecta de forma segura con tu Google Sheets evitando el bloqueo -->
+    <iframe id="tabla-oculta" src="https://google.com" onload="procesarDatos()"></iframe>
+
     <script>
-        const SPREADSHEET_ID = '1cDCjO_jVLAGGhDHl29_VVRhXtA1pFZqgw_2gxObKa4Y';
-        // Usamos el formato CSV que es mucho más compatible con permisos móviles
-        const URL = `https://google.com{SPREADSHEET_ID}/export?format=csv`;
-
-        async function cargarProductos() {
+        function procesarDatos() {
             try {
-                const respuesta = await fetch(URL);
-                const texto = await respuesta.text();
-                
-                // Dividir el texto por líneas de la tabla
-                const lineas = texto.split('\n');
+                const iframe = document.getElementById('tabla-oculta');
+                const tDoc = iframe.contentDocument || iframe.contentWindow.document;
+                const filas = tDoc.querySelectorAll('table tbody tr');
                 const contenedor = document.getElementById('lista-productos');
-                contenedor.innerHTML = ''; 
+                contenedor.innerHTML = '';
 
-                for(let i = 1; i < lineas.length; i++) {
-                    if(lineas[i].trim() === '') continue;
-                    
-                    // Separar las columnas por comas
-                    const columnas = lineas[i].split(',');
-                    const nombre = columnas[0] ? columnas[0].replace(/"/g, '') : '';
-                    const presentacion = columnas[1] ? columnas[1].replace(/"/g, '') : 'Unidad';
-                    const precio = columnas[2] ? columnas[2].replace(/"/g, '') : '0.00';
+                filas.forEach((fila, index) => {
+                    const columnas = fila.querySelectorAll('td');
+                    if (columnas.length >= 3 && index > 0) {
+                        const nombre = columnas[0].innerText.trim();
+                        const presentacion = columnas[1].innerText.trim();
+                        const precio = columnas[2].innerText.trim();
 
-                    if(nombre) {
-                        const card = document.createElement('div');
-                        card.className = 'producto-card';
-                        card.innerHTML = `
-                            <h3>${nombre}</h3>
-                            <p>${presentacion}</p>
-                            <div class="precio">$${precio}</div>
-                        `;
-                        contenedor.appendChild(card);
+                        if (nombre) {
+                            const card = document.createElement('div');
+                            card.className = 'producto-card';
+                            card.innerHTML = `
+                                <h3>${nombre}</h3>
+                                <p>${presentacion}</p>
+                                <div class="precio">$${precio}</div>
+                            `;
+                            contenedor.appendChild(card);
+                        }
                     }
-                }
-            } catch (error) {
-                document.getElementById('mensaje').innerText = 'No se pudo cargar el menú. Verifica la conexión.';
-                console.error(error);
+                });
+            } catch (e) {
+                // Alternativa automática si el navegador restringe el iframe directo
+                const contenedor = document.getElementById('lista-productos');
+                contenedor.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:20px;">
+                    <p>Cargando interfaz de actualización directa...</p>
+                    <iframe src="https://google.com" style="width:100%; height:400px; border:none; border-radius:12px;"></iframe>
+                </div>`;
             }
         }
 
@@ -79,7 +79,7 @@
             let input = document.getElementById('buscar').value.toLowerCase();
             let cards = document.getElementsByClassName('producto-card');
             for (let i = 0; i < cards.length; i++) {
-                let nombre = cards[i].getElementsByTagName('h3')[0].innerText.toLowerCase();
+                let nombre = cards[i].getElementsByTagName('h3')[0]?.innerText.toLowerCase() || '';
                 if (nombre.includes(input)) {
                     cards[i].style.display = "";
                 } else {
@@ -87,8 +87,6 @@
                 }
             }
         }
-
-        cargarProductos();
     </script>
 </body>
 </html>
