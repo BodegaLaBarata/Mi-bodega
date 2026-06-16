@@ -11,22 +11,17 @@
         header p { margin: 5px 0 0 0; opacity: 0.9; font-size: 14px; }
         .contenedor { max-width: 600px; margin: 0 auto; padding: 20px; box-sizing: border-box; }
         
-        /* Sección de Métodos de Pago */
         .seccion-pagos { background: white; padding: 15px 20px; border-radius: 16px; border: 1px solid #edf2f7; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
         .seccion-pagos h3 { margin: 0 0 10px 0; font-size: 14px; color: #1e3c72; text-transform: uppercase; letter-spacing: 0.5px; }
         .tags-pago { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
-        .tag-pago { background: #edf2f7; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; color: #4a5568; display: inline-flex; align-items: center; gap: 4px; }
+        .tag-pago { background: #edf2f7; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; color: #4a5568; }
         .datos-pago-movil { background: #f7fafc; border-left: 4px solid #2a5298; padding: 10px 15px; border-radius: 0 8px 8px 0; font-size: 13px; line-height: 1.6; color: #2d3748; }
 
-        /* Buscador inteligente */
-        .buscador { width: 100%; padding: 15px 20px; margin-bottom: 20px; border: 1px solid #edf2f7; border-radius: 30px; box-sizing: border-box; font-size: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); outline: none; transition: all 0.2s; }
-        .buscador:focus { border-color: #2a5298; box-shadow: 0 4px 12px rgba(42,82,152,0.1); }
+        .buscador { width: 100%; padding: 15px 20px; margin-bottom: 20px; border: 1px solid #edf2f7; border-radius: 30px; box-sizing: border-box; font-size: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); outline: none; }
         
-        /* Grid y Tarjetas de Productos */
         .grid-productos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
-        .producto-card { background: white; padding: 20px 15px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); text-align: left; border: 1px solid #edf2f7; position: relative; box-sizing: border-box; transition: transform 0.2s, box-shadow 0.2s; }
+        .producto-card { background: white; padding: 20px 15px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); text-align: left; border: 1px solid #edf2f7; position: relative; box-sizing: border-box; }
         
-        /* Alerta visual para productos Agotados */
         .producto-card.tarjeta-agotado { opacity: 0.55; background-color: #fff5f5; border-color: #fed7d7; }
         .producto-card.tarjeta-agotado .precio-bloque { background: #fee2e2; }
         .producto-card.tarjeta-agotado .precio-texto { color: #e53e3e; }
@@ -40,9 +35,7 @@
         .precio-bloque strong { color: #2f855a; font-size: 10px; text-transform: uppercase; display: block; margin-bottom: -2px; }
         .precio-texto { font-weight: 700; color: #2ed573; font-size: 18px; }
         
-        /* Panel de administración protegido */
         .panel-admin { background: white; padding: 20px; border-radius: 16px; border: 1px dashed #2a5298; margin-top: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: none; }
-        .panel-admin h2 { margin-top: 0; font-size: 18px; color: #1e3c72; }
         .form-control { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #cbd5e0; border-radius: 8px; box-sizing: border-box; }
         .btn { width: 100%; background: #2a5298; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px; margin-bottom: 10px; }
         .btn-bloqueo { width: auto; background: transparent; color: #a0aec0; border: none; padding: 5px; font-size: 12px; cursor: pointer; display: block; margin: 20px auto 0 auto; text-decoration: underline; }
@@ -57,7 +50,6 @@
     </header>
 
     <div class="contenedor">
-        <!-- Métodos de Pago siempre a la vista -->
         <div class="seccion-pagos">
             <h3>💳 Métodos de Pago</h3>
             <div class="tags-pago">
@@ -73,21 +65,18 @@
             </div>
         </div>
 
-        <!-- Buscador Inteligente -->
         <input type="text" id="buscar" class="buscador" placeholder="🔍 Buscar producto por nombre..." oninput="filtrarProductos()">
 
         <div class="grid-productos" id="lista-productos"></div>
 
-        <!-- Botón de acceso administrativo -->
         <button class="btn-bloqueo" id="btn-entrar" onclick="verificarAcceso()">⚙️ Acceso Administrador</button>
 
-        <!-- Panel del Dueño -->
         <div class="panel-admin" id="admin-section">
             <h2>⚙️ Panel de Control de Inventario</h2>
-            <input type="text" id="prod-nombre" class="form-control" placeholder="Nombre del Producto (Ej: Harina Kaly)">
-            <input type="text" id="prod-presentacion" class="form-control" placeholder="Disponibilidad / Empaque (Escribe 'Agotado' para activar la alerta)">
+            <input type="text" id="prod-nombre" class="form-control" placeholder="Nombre del Producto">
+            <input type="text" id="prod-presentacion" class="form-control" placeholder="Disponibilidad (Ej: Kilo / Agotado)">
             <input type="number" id="prod-precio" class="form-control" placeholder="Precio en Bolívares (Bs.)" step="0.01">
-            <button class="btn" onclick="agregarOEditarProducto()">💾 Guardar Producto en la Web</button>
+            <button class="btn" onclick="agregarOEditarProducto()">💾 Guardar Producto</button>
             <button class="btn" style="background:#718096;" onclick="cerrarPanel()">🔒 Cerrar Sesión</button>
         </div>
     </div>
@@ -100,7 +89,14 @@
             { id: 2, nombre: "Arroz Primor", presentacion: "Agotado", precio: "520.00" }
         ];
 
-        let inventario = JSON.parse(localStorage.getItem('inventario_bodega')) || productosPorDefecto;
+        let inventario = JSON.parse(localStorage.getItem('inventario_bodega'));
+        
+        // Corrección directa: Si no existe o la lista está limpia, la obligamos a llenarse
+        if (!inventario || inventario.length === 0) {
+            inventario = productosPorDefecto;
+            localStorage.setItem('inventario_bodega', JSON.stringify(inventario));
+        }
+
         let modoAdminActivo = false;
 
         function renderizarProductos(productosAMostrar = inventario) {
@@ -114,8 +110,6 @@
 
             productosAMostrar.forEach(prod => {
                 const card = document.createElement('div');
-                
-                // Validación inteligente de disponibilidad: si contiene la palabra "agotado" activa la alerta
                 const esAgotado = prod.presentacion.toLowerCase().includes('agotado');
                 card.className = `producto-card ${esAgotado ? 'tarjeta-agotado' : ''}`;
                 
@@ -137,7 +131,6 @@
             });
         }
 
-        // Buscador reactivo por evento oninput
         function filtrarProductos() {
             const textoBuscar = document.getElementById('buscar').value.toLowerCase().trim();
             const productosFiltrados = inventario.filter(prod => 
@@ -155,4 +148,20 @@
                 document.getElementById('btn-entrar').style.display = "none";
                 renderizarProductos();
             } else if (claveIngresada !== null) {
+                alert("Contraseña incorrecta.");
+            }
+        }
 
+        function cerrarPanel() {
+            modoAdminActivo = false;
+            document.getElementById('admin-section').style.display = "none";
+            document.getElementById('btn-entrar').style.display = "block";
+            renderizarProductos();
+        }
+
+        function agregarOEditarProducto() {
+            const nombre = document.getElementById('prod-nombre').value.trim();
+            const presentacion = document.getElementById('prod-presentacion').value.trim();
+            const precio = document.getElementById('prod-precio').value.trim();
+
+            if (!nombre || !precio) {
