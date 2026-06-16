@@ -3,30 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bodega La Barata - v2</title>
+    <title>Bodega La Barata</title>
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; background-color: #f8f9fa; text-align: center; }
-        header { padding: 30px 20px; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; }
-        .contenedor { max-width: 500px; margin: 0 auto; padding: 20px; }
-        .boton-app { display: inline-block; background-color: #2ed573; color: white; padding: 15px 30px; font-size: 18px; font-weight: bold; text-decoration: none; border-radius: 30px; box-shadow: 0 4px 10px rgba(46, 213, 115, 0.3); margin-top: 30px; transition: transform 0.2s; }
-        .boton-app:active { transform: scale(0.95); }
-        p { color: #555; line-height: 1.6; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f8f9fa; color: #2d3748; }
+        header { text-align: center; padding: 25px 20px; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        header h1 { margin: 0; font-size: 26px; }
+        header p { margin: 5px 0 0 0; opacity: 0.9; font-size: 14px; }
+        .contenedor { max-width: 600px; margin: 0 auto; padding: 20px; box-sizing: border-box; }
+        .buscador { width: 100%; padding: 15px 20px; margin-bottom: 20px; border: 1px solid #edf2f7; border-radius: 30px; box-sizing: border-box; font-size: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); outline: none; }
+        .grid-productos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
+        .producto-card { background: white; padding: 20px 15px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); text-align: center; border: 1px solid #edf2f7; position: relative; }
+        .producto-card h3 { margin: 0 0 5px 0; font-size: 16px; }
+        .producto-card p { margin: 0; font-size: 13px; color: #718096; }
+        .precio { font-weight: 700; color: #2ed573; font-size: 20px; margin-top: 12px; background: #e8fbf1; padding: 4px 10px; border-radius: 20px; display: inline-block; }
+        
+        /* Panel de administración en la misma página */
+        .panel-admin { background: white; padding: 20px; border-radius: 16px; border: 1px dashed #2a5298; margin-top: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .panel-admin h2 { margin-top: 0; font-size: 18px; color: #1e3c72; }
+        .form-control { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #cbd5e0; border-radius: 8px; box-sizing: border-box; }
+        .btn { width: 100%; background: #2a5298; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px; }
+        .btn-borrar { position: absolute; top: 8px; right: 8px; background: #ff4757; color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 11px; cursor: pointer; display: none; }
     </style>
 </head>
 <body>
 
     <header>
         <h1>Bodega La Barata</h1>
-        <p>Inventario y Precios Digitales</p>
+        <p>Precios y Disponibilidad en Tiempo Real</p>
     </header>
 
     <div class="contenedor">
-        <h2>¡Tu inventario está listo!</h2>
-        <p>Para añadir productos, cambiar precios con un toque y que tus clientes lo vean todo ordenado como una aplicación real en su teléfono, haz clic abajo:</p>
-        
-        <!-- Enlace directo para abrir la app oficial desde tu hoja de Google Sheets -->
-        <a href="https://appsheet.com" target="_blank" class="boton-app">📱 Abrir Mi Bodega Digital</a>
+        <!-- Buscador funcional al instante -->
+        <input type="text" id="buscar" class="buscador" placeholder="🔍 Buscar producto..." onkeyup="filtrarProductos()">
+
+        <!-- Catálogo de productos -->
+        <div class="grid-productos" id="lista-productos"></div>
+
+        <!-- Panel del Dueño para Añadir y Cambiar Precios (Privado/Oculto si deseas) -->
+        <div class="panel-admin" id="admin-section">
+            <h2>⚙️ Panel de Control de Inventario</h2>
+            <input type="text" id="prod-nombre" class="form-control" placeholder="Nombre del Producto (Ej: Harina Kaly)">
+            <input type="text" id="prod-presentacion" class="form-control" placeholder="Presentación (Ej: Kilo / Litro / Unidad)">
+            <input type="number" id="prod-precio" class="form-control" placeholder="Precio ($)">
+            <button class="btn" onclick="agregarOEditarProducto()">💾 Guardar Producto en la Web</button>
+            <p style="font-size: 11px; color: #a0aec0; text-align: center; margin-top: 8px;">Los cambios se guardan localmente en tu teléfono de forma permanente.</p>
+        </div>
     </div>
 
+    <script>
+        // Productos por defecto iniciales
+        const productosPorDefecto = [
+            { id: 1, nombre: "Harina Kaly", presentacion: "Kilo", precio: "680.00" }
+        ];
+
+        // Cargar inventario guardado o usar el por defecto
+        let inventario = JSON.parse(localStorage.getItem('inventario_bodega')) || productosPorDefecto;
+
+        function renderizarProductos() {
+            const contenedor = document.getElementById('lista-productos');
+            contenedor.innerHTML = '';
+
+            inventario.forEach(prod => {
+                const card = document.createElement('div');
+                card.className = 'producto-card';
+                card.innerHTML = `
+                    <button class="btn-borrar" onclick="eliminarProducto(${prod.id})">X</button>
+                    <h3>${prod.nombre}</h3>
+                    <p>${prod.presentacion}</p>
+                    <div class="precio">$${parseFloat(prod.precio).toFixed(2)}</div>
+                `;
+                
+                // Mostrar botones de borrado si estás interactuando con el panel administrativo
+                card.querySelector('.btn-borrar').style.display = "block";
+                contenedor.appendChild(card);
+            });
+        }
+
+        function agregarOEditarProducto() {
+            const nombre = document.getElementById('prod-nombre').value.trim();
+            const presentacion = document.getElementById('prod-presentacion').value.trim();
+            const precio = document.getElementById('prod-precio').value.trim();
+
+            if (!nombre || !precio) {
+                alert("Por favor introduce al menos el Nombre y el Precio.");
+                return;
+            }
+
+            // Comprobar si el producto ya existe para actualizar el precio
+            const indiceExistente = inventario.findIndex(p => p.nombre.toLowerCase() === nombre.toLowerCase());
+
+            if (indiceExistente !== -1) {
+                // Actualizar precio y presentación del producto existente
+                inventario[indiceExistente].precio = precio;
+                if (presentacion) inventario[indiceExistente].presentacion = presentacion;
+            } else {
+                // Crear un nuevo producto si no existe
+                const nuevoProd = {
+                    id: Date.now(),
+                    nombre: nombre,
+                    presentacion: presentacion || "Unidad",
+                    precio: precio
+                };
+                inventario.push(nuevoProd);
+            }
+
+            // Guardar cambios permanentemente en la memoria del dispositivo
+            localStorage.setItem('inventario_bodega', JSON.stringify(inventario));
+            
+            // Limpiar formulario y refrescar la pantalla visual
+            document.getElementById('prod-nombre').value = '';
+            document.getElementById('prod-presentacion').value = '';
+            document.getElementById('prod-precio').value = '';
+            
+            renderizarProductos();
+        }
+
+        function eliminarProducto(id) {
+            if(confirm("¿Seguro que quieres quitar este producto del menú?")) {
+                inventario = inventario.filter(p => p.id !== id);
+                localStorage.setItem('inventario_bodega', JSON.stringify(inventario));
+                renderizarProductos();
+            }
+        }
+
+        function filtrarProductos() {
+            let input = document.getElementById('buscar').value.toLowerCase();
+            let cards = document.getElementsByClassName('producto-card');
+            for (let i = 0; i < cards.length; i++) {
+                let nombre = cards[i].getElementsByTagName('h3')[0].innerText.toLowerCase();
+                if (nombre.includes(input)) {
+                    cards[i].style.display = "";
+                } else {
+                    cards[i].style.display = "none";
+                }
+            }
+        }
+
+        // Iniciar la aplicación mostrando los productos de inmediato
+        renderizarProductos();
+    </script>
 </body>
 </html>
