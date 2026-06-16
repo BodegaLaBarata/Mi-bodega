@@ -12,17 +12,21 @@
         .contenedor { max-width: 600px; margin: 0 auto; padding: 20px; box-sizing: border-box; }
         .buscador { width: 100%; padding: 15px 20px; margin-bottom: 20px; border: 1px solid #edf2f7; border-radius: 30px; box-sizing: border-box; font-size: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); outline: none; }
         .grid-productos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
-        .producto-card { background: white; padding: 20px 15px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); text-align: center; border: 1px solid #edf2f7; position: relative; }
-        .producto-card h3 { margin: 0 0 5px 0; font-size: 16px; }
-        .producto-card p { margin: 0; font-size: 13px; color: #718096; }
-        .precio { font-weight: 700; color: #2ed573; font-size: 20px; margin-top: 12px; background: #e8fbf1; padding: 4px 10px; border-radius: 20px; display: inline-block; }
+        .producto-card { background: white; padding: 20px 15px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); text-align: left; border: 1px solid #edf2f7; position: relative; box-sizing: border-box; }
+        .linea-dato { font-size: 14px; margin-bottom: 6px; color: #4a5568; }
+        .linea-dato strong { color: #718096; font-size: 11px; text-transform: uppercase; display: block; margin-bottom: 1px; letter-spacing: 0.5px; }
+        .nombre-texto { font-size: 16px; font-weight: 600; color: #1a202c; }
+        .precio-bloque { margin-top: 12px; background: #e8fbf1; padding: 6px 12px; border-radius: 20px; display: inline-block; }
+        .precio-bloque strong { color: #2f855a; font-size: 10px; text-transform: uppercase; display: block; margin-bottom: -2px; }
+        .precio-texto { font-weight: 700; color: #2ed573; font-size: 18px; }
         
-        /* Panel de administración en la misma página */
-        .panel-admin { background: white; padding: 20px; border-radius: 16px; border: 1px dashed #2a5298; margin-top: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        /* Panel de administración protegido */
+        .panel-admin { background: white; padding: 20px; border-radius: 16px; border: 1px dashed #2a5298; margin-top: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: none; }
         .panel-admin h2 { margin-top: 0; font-size: 18px; color: #1e3c72; }
         .form-control { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #cbd5e0; border-radius: 8px; box-sizing: border-box; }
-        .btn { width: 100%; background: #2a5298; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px; }
-        .btn-borrar { position: absolute; top: 8px; right: 8px; background: #ff4757; color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 11px; cursor: pointer; display: none; }
+        .btn { width: 100%; background: #2a5298; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px; margin-bottom: 10px; }
+        .btn-bloqueo { width: auto; background: transparent; color: #a0aec0; border: none; padding: 5px; font-size: 12px; cursor: pointer; display: block; margin: 20px auto 0 auto; text-decoration: underline; }
+        .btn-borrar { position: absolute; top: 8px; right: 8px; background: #ff4757; color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 11px; cursor: pointer; display: none; text-align: center; line-height: 18px; }
     </style>
 </head>
 <body>
@@ -33,31 +37,34 @@
     </header>
 
     <div class="contenedor">
-        <!-- Buscador funcional al instante -->
         <input type="text" id="buscar" class="buscador" placeholder="🔍 Buscar producto..." onkeyup="filtrarProductos()">
 
-        <!-- Catálogo de productos -->
         <div class="grid-productos" id="lista-productos"></div>
 
-        <!-- Panel del Dueño para Añadir y Cambiar Precios (Privado/Oculto si deseas) -->
+        <!-- Botón discreto para que tú abras el panel -->
+        <button class="btn-bloqueo" id="btn-entrar" onclick="verificarAcceso()">⚙️ Acceso Administrador</button>
+
+        <!-- Panel del Dueño Seguro -->
         <div class="panel-admin" id="admin-section">
             <h2>⚙️ Panel de Control de Inventario</h2>
             <input type="text" id="prod-nombre" class="form-control" placeholder="Nombre del Producto (Ej: Harina Kaly)">
-            <input type="text" id="prod-presentacion" class="form-control" placeholder="Presentación (Ej: Kilo / Litro / Unidad)">
-            <input type="number" id="prod-precio" class="form-control" placeholder="Precio ($)">
+            <input type="text" id="prod-presentacion" class="form-control" placeholder="Disponibilidad / Empaque (Ej: Kilo / Unidad / Agotado)">
+            <input type="number" id="prod-precio" class="form-control" placeholder="Precio en Bolívares (Bs.)">
             <button class="btn" onclick="agregarOEditarProducto()">💾 Guardar Producto en la Web</button>
-            <p style="font-size: 11px; color: #a0aec0; text-align: center; margin-top: 8px;">Los cambios se guardan localmente en tu teléfono de forma permanente.</p>
+            <button class="btn" style="background:#718096;" onclick="cerrarPanel()">🔒 Cerrar Sesión</button>
         </div>
     </div>
 
     <script>
-        // Productos por defecto iniciales
+        // TU CONTRASEÑA SECRETA: Cambia '1234' por la clave que tú quieras entre las comillas
+        const CLAVE_SECRETA = '1234';
+
         const productosPorDefecto = [
             { id: 1, nombre: "Harina Kaly", presentacion: "Kilo", precio: "680.00" }
         ];
 
-        // Cargar inventario guardado o usar el por defecto
         let inventario = JSON.parse(localStorage.getItem('inventario_bodega')) || productosPorDefecto;
+        let modoAdminActivo = false;
 
         function renderizarProductos() {
             const contenedor = document.getElementById('lista-productos');
@@ -68,15 +75,38 @@
                 card.className = 'producto-card';
                 card.innerHTML = `
                     <button class="btn-borrar" onclick="eliminarProducto(${prod.id})">X</button>
-                    <h3>${prod.nombre}</h3>
-                    <p>${prod.presentacion}</p>
-                    <div class="precio">$${parseFloat(prod.precio).toFixed(2)}</div>
+                    <div class="linea-dato"><strong>Nombre:</strong> <span class="nombre-texto">${prod.nombre}</span></div>
+                    <div class="linea-dato"><strong>Disponibilidad:</strong> ${prod.presentacion}</div>
+                    <div class="precio-bloque">
+                        <strong>Precio:</strong>
+                        <span class="precio-texto">Bs. ${parseFloat(prod.precio).toFixed(2)}</span>
+                    </div>
                 `;
                 
-                // Mostrar botones de borrado si estás interactuando con el panel administrativo
-                card.querySelector('.btn-borrar').style.display = "block";
+                if(modoAdminActivo) {
+                    card.querySelector('.btn-borrar').style.display = "block";
+                }
                 contenedor.appendChild(card);
             });
+        }
+
+        function verificarAcceso() {
+            const claveIngresada = prompt("Introduce tu contraseña para modificar el inventario:");
+            if (claveIngresada === CLAVE_SECRETA) {
+                modoAdminActivo = true;
+                document.getElementById('admin-section').style.display = "block";
+                document.getElementById('btn-entrar').style.display = "none";
+                renderizarProductos();
+            } else if (claveIngresada !== null) {
+                alert("Contraseña incorrecta. Acceso denegado.");
+            }
+        }
+
+        function cerrarPanel() {
+            modoAdminActivo = false;
+            document.getElementById('admin-section').style.display = "none";
+            document.getElementById('btn-entrar').style.display = "block";
+            renderizarProductos();
         }
 
         function agregarOEditarProducto() {
@@ -89,28 +119,23 @@
                 return;
             }
 
-            // Comprobar si el producto ya existe para actualizar el precio
             const indiceExistente = inventario.findIndex(p => p.nombre.toLowerCase() === nombre.toLowerCase());
 
             if (indiceExistente !== -1) {
-                // Actualizar precio y presentación del producto existente
                 inventario[indiceExistente].precio = precio;
                 if (presentacion) inventario[indiceExistente].presentacion = presentacion;
             } else {
-                // Crear un nuevo producto si no existe
                 const nuevoProd = {
                     id: Date.now(),
                     nombre: nombre,
-                    presentacion: presentacion || "Unidad",
+                    presentacion: presentacion || "Disponible",
                     precio: precio
                 };
                 inventario.push(nuevoProd);
             }
 
-            // Guardar cambios permanentemente en la memoria del dispositivo
             localStorage.setItem('inventario_bodega', JSON.stringify(inventario));
             
-            // Limpiar formulario y refrescar la pantalla visual
             document.getElementById('prod-nombre').value = '';
             document.getElementById('prod-presentacion').value = '';
             document.getElementById('prod-precio').value = '';
@@ -130,7 +155,7 @@
             let input = document.getElementById('buscar').value.toLowerCase();
             let cards = document.getElementsByClassName('producto-card');
             for (let i = 0; i < cards.length; i++) {
-                let nombre = cards[i].getElementsByTagName('h3')[0].innerText.toLowerCase();
+                let nombre = cards[i].getElementsByClassName('nombre-texto')[0].innerText.toLowerCase();
                 if (nombre.includes(input)) {
                     cards[i].style.display = "";
                 } else {
@@ -139,7 +164,6 @@
             }
         }
 
-        // Iniciar la aplicación mostrando los productos de inmediato
         renderizarProductos();
     </script>
 </body>
