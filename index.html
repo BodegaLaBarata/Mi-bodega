@@ -9,25 +9,40 @@
         header { text-align: center; padding: 25px 20px; background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; border-radius: 0 0 20px 20px; }
         header h1 { margin: 0; font-size: 26px; }
         .contenedor { max-width: 600px; margin: 0 auto; padding: 20px; box-sizing: border-box; }
+        
+        /* Sección de Métodos de Pago */
         .seccion-pagos { background: white; padding: 15px; border-radius: 16px; border: 1px solid #edf2f7; margin-bottom: 20px; }
         .tag-pago { background: #edf2f7; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; margin-right: 5px; }
         .datos-pago-movil { background: #f7fafc; border-left: 4px solid #2a5298; padding: 10px; margin-top: 10px; font-size: 13px; border-radius: 0 8px 8px 0; }
+        
         .buscador { width: 100%; padding: 15px; margin-bottom: 20px; border: 1px solid #edf2f7; border-radius: 30px; box-sizing: border-box; font-size: 16px; outline: none; }
+        
+        /* Grid de Productos */
         .grid-productos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
-        .producto-card { background: white; padding: 15px; border-radius: 16px; border: 1px solid #edf2f7; position: relative; }
+        .producto-card { background: white; padding: 15px; border-radius: 16px; border: 1px solid #edf2f7; position: relative; display: flex; flex-direction: column; justify-content: space-between; }
         .producto-card.tarjeta-agotado { opacity: 0.55; background: #fff5f5; border-color: #fed7d7; }
-        .badge-agotado { display: none; background: #e53e3e; color: white; font-size: 9px; font-weight: bold; padding: 2px 6px; border-radius: 4px; position: absolute; top: 10px; right: 10px; }
+        .badge-agotado { display: none; background: #e53e3e; color: white; font-size: 9px; font-weight: bold; padding: 2px 6px; border-radius: 4px; position: absolute; top: 10px; right: 10px; text-transform: uppercase; }
         .producto-card.tarjeta-agotado .badge-agotado { display: block; }
         .linea-dato { font-size: 14px; margin-bottom: 5px; }
-        .precio-bloque { margin-top: 10px; background: #e8fbf1; padding: 5px 10px; border-radius: 20px; display: inline-block; }
+        
+        .precio-bloque { margin-top: 10px; background: #e8fbf1; padding: 5px 10px; border-radius: 20px; display: inline-block; width: fit-content; }
         .producto-card.tarjeta-agotado .precio-bloque { background: #fee2e2; }
         .precio-texto { font-weight: bold; color: #2ed573; font-size: 16px; }
         .producto-card.tarjeta-agotado .precio-texto { color: #e53e3e; }
-        .panel-admin { background: white; padding: 20px; border-radius: 16px; border: 1px dashed #2a5298; display: none; margin-top: 20px; }
-        .form-control { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #cbd5e0; border-radius: 8px; box-sizing: border-box; }
-        .btn { width: 100%; background: #2a5298; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .btn-bloqueo { display: block; width: 100%; text-align: center; color: #a0aec0; font-size: 13px; margin: 20px 0; text-decoration: underline; background: none; border: none; cursor: pointer; }
-        .btn-borrar { position: absolute; top: 8px; right: 8px; background: #ff4757; color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 11px; cursor: pointer; display: none; }
+        
+        /* Botón de WhatsApp */
+        .btn-whatsapp { display: block; width: 100%; background: #25d366; color: white; border: none; padding: 8px; border-radius: 20px; font-weight: bold; font-size: 12px; cursor: pointer; margin-top: 12px; text-align: center; text-decoration: none; box-sizing: border-box; }
+        .producto-card.tarjeta-agotado .btn-whatsapp { display: none; } /* Ocultar botón si no hay stock */
+
+        /* Vistas de Pantalla */
+        #vista-cliente { display: block; }
+        #vista-admin { display: none; background: white; padding: 25px 20px; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #edf2f7; margin-top: 10px; }
+        
+        /* Formulario del Dueño */
+        .form-control { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #cbd5e0; border-radius: 10px; box-sizing: border-box; font-size: 15px; }
+        .btn { width: 100%; background: #2a5298; color: white; border: none; padding: 14px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        .btn-bloqueo { display: block; width: 100%; text-align: center; color: #a0aec0; font-size: 13px; margin: 35px 0 10px 0; text-decoration: underline; background: none; border: none; cursor: pointer; }
+        .btn-borrar { position: absolute; top: 8px; right: 8px; background: #ff4757; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; font-size: 12px; cursor: pointer; display: none; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -38,37 +53,51 @@
     </header>
 
     <div class="contenedor">
-        <div class="seccion-pagos">
-            <h3 style="margin:0 0 10px 0; font-size:14px; color:#1e3c72;">💳 MÉTODOS DE PAGO</h3>
-            <span class="tag-pago">🔵 Biopago</span>
-            <span class="tag-pago">💵 Efectivo</span>
-            <span class="tag-pago">📱 Pago Móvil</span>
-            <div class="datos-pago-movil">
-                <strong>Datos de Pago Móvil:</strong><br>
-                🏦 Banco Venezuela (0102)<br>
-                📞 Teléfono: 04141207012<br>
-                🆔 C.I: 27283211
+        
+        <!-- PANTALLA PRINCIPAL DEL CLIENTE -->
+        <div id="vista-cliente">
+            <div class="seccion-pagos">
+                <h3 style="margin:0 0 10px 0; font-size:14px; color:#1e3c72;">💳 MÉTODOS DE PAGO</h3>
+                <span class="tag-pago">🔵 Biopago</span>
+                <span class="tag-pago">💵 Efectivo</span>
+                <span class="tag-pago">📱 Pago Móvil</span>
+                <div class="datos-pago-movil">
+                    <strong>Datos de Pago Móvil:</strong><br>
+                    🏦 Banco Venezuela (0102)<br>
+                    📞 Teléfono: 04141207012<br>
+                    🆔 C.I: 27283211
+                </div>
             </div>
+
+            <input type="text" id="buscar" class="buscador" placeholder="🔍 Buscar producto..." oninput="filtrarProductos()">
+
+            <div class="grid-productos" id="lista-productos"></div>
+
+            <button class="btn-bloqueo" id="btn-entrar" onclick="verificarAcceso()">⚙️ Acceso Administrador</button>
         </div>
 
-        <input type="text" id="buscar" class="buscador" placeholder="🔍 Buscar producto..." oninput="filtrarProductos()">
-
-        <div class="grid-productos" id="lista-productos"></div>
-
-        <button class="btn-bloqueo" id="btn-entrar" onclick="verificarAcceso()">⚙️ Acceso Administrador</button>
-
-        <div class="panel-admin" id="admin-section">
-            <h2 style="margin:0 0 10px 0; font-size:16px;">⚙️ Panel de Inventario</h2>
-            <input type="text" id="prod-nombre" class="form-control" placeholder="Nombre del Producto">
+        <!-- PANTALLA EXCLUSIVA DEL ADMINISTRADOR -->
+        <div id="vista-admin">
+            <h2 style="margin:0 0 15px 0; font-size:20px; color:#1e3c72; text-align:center;">⚙️ Panel de Inventario</h2>
+            
+            <input type="text" id="prod-nombre" class="form-control" placeholder="Nombre del Producto (Ej: Harina Kaly)">
             <input type="text" id="prod-presentacion" class="form-control" placeholder="Disponibilidad (Ej: Kilo / Agotado)">
             <input type="number" id="prod-precio" class="form-control" placeholder="Precio (Bs.)" step="0.01">
-            <button class="btn" onclick="agregarOEditarProducto()">💾 Guardar Producto</button>
-            <button class="btn" style="background:#718096; margin-top:5px;" onclick="cerrarPanel()">🔒 Cerrar Sesión</button>
+            
+            <button class="btn" onclick="agregarOEditarProducto()">💾 Guardar Producto en la Web</button>
+            <button class="btn" style="background:#718096; margin-top:8px;" onclick="cerrarPanel()">🔒 Cerrar Panel (Clientes)</button>
+            
+            <h3 style="margin:25px 0 10px 0; font-size:14px; color:#4a5568;">Lista Actual (Presiona X para eliminar):</h3>
+            <div class="grid-productos" id="lista-productos-admin"></div>
         </div>
+
     </div>
 
     <script>
+        // CONFIGURACIÓN DE TU TELÉFONO DE BODEGA: Usa el formato internacional (58 para Venezuela)
+        const NUMERO_WHATSAPP = '584141207012'; 
         const CLAVE_SECRETA = '2310';
+        
         const prodDefecto = [
             { id: 1, nombre: "Harina Kaly", presentacion: "Kilo", precio: "680.00" },
             { id: 2, nombre: "Arroz Primor", presentacion: "Agotado", precio: "520.00" }
@@ -80,86 +109,54 @@
             localStorage.setItem('inventario_bodega', JSON.stringify(inventario));
         }
 
-        let modoAdminActivo = false;
+        function renderizarProductos() {
+            const contenedorCliente = document.getElementById('lista-productos');
+            contenedorCliente.innerHTML = '';
+            
+            const contenedorAdmin = document.getElementById('lista-productos-admin');
+            contenedorAdmin.innerHTML = '';
 
-        function renderizarProductos(lista = inventario) {
-            const contenedor = document.getElementById('lista-productos');
-            contenedor.innerHTML = '';
-            if (lista.length === 0) {
-                contenedor.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#a0aec0;">No hay productos.</p>';
+            if (inventario.length === 0) {
+                const mensajeVacio = '<p style="grid-column:1/-1; text-align:center; color:#a0aec0;">No hay productos registrados.</p>';
+                contenedorCliente.innerHTML = mensajeVacio;
+                contenedorAdmin.innerHTML = mensajeVacio;
                 return;
             }
-            lista.forEach(prod => {
-                const card = document.createElement('div');
+
+            inventario.forEach(prod => {
                 const esAgotado = prod.presentacion.toLowerCase().includes('agotado');
-                card.className = `producto-card ${esAgotado ? 'tarjeta-agotado' : ''}`;
-                card.innerHTML = `
-                    <button class="btn-borrar" onclick="eliminarProducto(${prod.id})">X</button>
-                    <span class="badge-agotado">Agotado</span>
-                    <div class="linea-dato"><b style="color:#718096; font-size:10px; display:block;">NOMBRE</b><b>${prod.nombre}</b></div>
-                    <div class="linea-dato"><b style="color:#718096; font-size:10px; display:block;">ESTADO</b>${prod.presentacion}</div>
-                    <div class="precio-bloque">
-                        <span class="precio-texto">Bs. ${parseFloat(prod.precio).toFixed(2)}</span>
+                const precioFormateado = parseFloat(prod.precio).toFixed(2);
+                
+                // Texto del pedido automático para WhatsApp
+                const textoMensaje = encodeURIComponent(
+                    `👋 ¡Hola! Me interesa comprar este producto de la página:\n\n` +
+                    `📦 *Producto:* ${prod.nombre}\n` +
+                    `📌 *Estado:* ${prod.presentacion}\n` +
+                    `💰 *Precio:* Bs. ${precioFormateado}\n\n` +
+                    `Realizaré el Pago Móvil a estos datos:\n` +
+                    `🏦 Banco de Venezuela (0102)\n` +
+                    `📞 04141207012\n` +
+                    `🆔 C.I: 27283211\n\n` +
+                    `¿Me confirma la disponibilidad para proceder a enviar el capture?`
+                );
+                const enlaceWhatsApp = `https://wa.me{NUMERO_WHATSAPP}?text=${textoMensaje}`;
+
+                // Tarjeta Cliente (Con botón verde de pedir por WhatsApp)
+                const cardCliente = document.createElement('div');
+                cardCliente.className = `producto-card ${esAgotado ? 'tarjeta-agotado' : ''}`;
+                cardCliente.innerHTML = `
+                    <div>
+                        <span class="badge-agotado">Agotado</span>
+                        <div class="linea-dato"><b style="color:#718096; font-size:10px; display:block;">NOMBRE</b><b>${prod.nombre}</b></div>
+                        <div class="linea-dato"><b style="color:#718096; font-size:10px; display:block;">ESTADO</b>${prod.presentacion}</div>
+                        <div class="precio-bloque"><span class="precio-texto">Bs. ${precioFormateado}</span></div>
                     </div>
+                    <a href="${enlaceWhatsApp}" target="_blank" class="btn-whatsapp">📲 Pedir por WhatsApp</a>
                 `;
-                if(modoAdminActivo) card.querySelector('.btn-borrar').style.display = "block";
-                contenedor.appendChild(card);
-            });
-        }
+                contenedorCliente.appendChild(cardCliente);
 
-        function filtrarProductos() {
-            const txt = document.getElementById('buscar').value.toLowerCase().trim();
-            renderizarProductos(inventario.filter(p => p.nombre.toLowerCase().includes(txt) || p.presentacion.toLowerCase().includes(txt)));
-        }
-
-        function verificarAcceso() {
-            var clave = prompt("Contraseña:");
-            if (clave === CLAVE_SECRETA) {
-                modoAdminActivo = true;
-                document.getElementById('admin-section').style.display = "block"; // Corregido aquí
-                document.getElementById('btn-entrar').style.display = "none";
-                renderizarProductos();
-            } else if (clave !== null) {
-                alert("Incorrecta.");
-            }
-        }
-
-        function cerrarPanel() {
-            modoAdminActivo = false;
-            document.getElementById('admin-section').style.display = "none";
-            document.getElementById('btn-entrar').style.display = "block";
-            renderizarProductos();
-        }
-
-        function agregarOEditarProducto() {
-            const n = document.getElementById('prod-nombre').value.trim();
-            const pr = document.getElementById('prod-presentacion').value.trim();
-            const p = document.getElementById('prod-precio').value.trim();
-            if (!n || !p) return alert("Llena los campos");
-            
-            const idx = inventario.findIndex(x => x.nombre.toLowerCase() === n.toLowerCase());
-            if (idx !== -1) {
-                inventario[idx].precio = p;
-                inventario[idx].presentacion = pr || "Disponible";
-            } else {
-                inventario.push({ id: Date.now(), nombre: n, presentacion: pr || "Disponible", precio: p });
-            }
-            localStorage.setItem('inventario_bodega', JSON.stringify(inventario));
-            document.getElementById('prod-nombre').value = '';
-            document.getElementById('prod-presentacion').value = '';
-            document.getElementById('prod-precio').value = '';
-            renderizarProductos();
-        }
-
-        function eliminarProducto(id) {
-            if(confirm("¿Eliminar?")) {
-                inventario = inventario.filter(x => x.id !== id);
-                localStorage.setItem('inventario_bodega', JSON.stringify(inventario));
-                renderizarProductos();
-            }
-        }
-
-        renderizarProductos();
-    </script>
-</body>
-</html>
+                // Tarjeta Admin (Con botón rojo X para borrar)
+                const cardAdmin = document.createElement('div');
+                cardAdmin.className = `producto-card ${esAgotado ? 'tarjeta-agotado' : ''}`;
+                cardAdmin.innerHTML = `
+                    <div>
