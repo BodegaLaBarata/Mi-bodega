@@ -35,7 +35,6 @@
     </div>
 
     <script>
-        // Conexión segura usando la API pública de Opensheet
         const SHEET_ID = '1cDCjO_jVLAGGhDHl29_VVRhXtA1pFZqgw_2gxObKa4Y';
         const SHEET_NAME = 'Hoja 1';
         const URL = `https://elk.sh{SHEET_ID}/${SHEET_NAME}`;
@@ -48,16 +47,16 @@
                 const contenedor = document.getElementById('lista-productos');
                 contenedor.innerHTML = ''; 
 
-                if (productos.length === 0) {
-                    contenedor.innerHTML = '<div class="cargando">No hay productos registrados en la lista.</div>';
+                if (!productos || productos.length === 0) {
+                    contenedor.innerHTML = '<div class="cargando">No hay productos registrados o la hoja está vacía.</div>';
                     return;
                 }
 
                 productos.forEach(item => {
-                    // Lee las columnas exactas de tu Excel (Nombre, Presentacion, Precio)
-                    const nombre = item['Nombre'] || '';
-                    const presentacion = item['Presentacion'] || 'Unidad';
-                    const precio = item['Precio'] || '0.00';
+                    // Busca los nombres exactos de tus columnas
+                    const nombre = item['Nombre'] || item['nombre'] || '';
+                    const presentacion = item['Presentacion'] || item['presentacion'] || 'Unidad';
+                    const precio = item['Precio'] || item['precio'] || '0.00';
 
                     if (nombre) {
                         const card = document.createElement('div');
@@ -71,7 +70,7 @@
                     }
                 });
             } catch (error) {
-                document.getElementById('mensaje').innerText = 'No se pudo sincronizar la lista de productos.';
+                document.getElementById('mensaje').innerText = 'Sincronizando productos... Si tarda, verifica el acceso público de tu Google Sheets.';
                 console.error(error);
             }
         }
