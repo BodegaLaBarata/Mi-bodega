@@ -23,7 +23,7 @@
         .producto-card.tarjeta-agotado .precio-bloque { background: #fee2e2; }
         .precio-texto { font-weight: bold; color: #2ed573; font-size: 16px; }
         .producto-card.tarjeta-agotado .precio-texto { color: #e53e3e; }
-        .panel-admin { background: white; padding: 20px; border-radius: 16px; border: 1px dashed #2a5298; display: none; }
+        .panel-admin { background: white; padding: 20px; border-radius: 16px; border: 1px dashed #2a5298; display: none; margin-top: 20px; }
         .form-control { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #cbd5e0; border-radius: 8px; box-sizing: border-box; }
         .btn { width: 100%; background: #2a5298; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
         .btn-bloqueo { display: block; width: 100%; text-align: center; color: #a0aec0; font-size: 13px; margin: 20px 0; text-decoration: underline; background: none; border: none; cursor: pointer; }
@@ -116,7 +116,7 @@
             var clave = prompt("Contraseña:");
             if (clave === CLAVE_SECRETA) {
                 modoAdminActivo = true;
-                document.getElementById('admin-section').style.style.display = "block";
+                document.getElementById('admin-section').style.display = "block"; // Corregido aquí
                 document.getElementById('btn-entrar').style.display = "none";
                 renderizarProductos();
             } else if (clave !== null) {
