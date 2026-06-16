@@ -3,59 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventario de mi Bodega</title>
+    <title>Bodega La Barata - v2</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f8f9fa; color: #2d3748; }
-        header { text-align: center; padding: 25px 20px; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        header h1 { margin: 0; font-size: 24px; font-weight: 700; letter-spacing: 0.5px; }
-        header p { margin: 5px 0 0 0; opacity: 0.9; font-size: 13px; }
-        .contenedor { max-width: 600px; margin: 0 auto; padding: 15px; box-sizing: border-box; }
-        .buscador { width: 100%; padding: 14px 20px; margin-bottom: 20px; border: 1px solid #e2e8f0; border-radius: 30px; box-sizing: border-box; font-size: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); outline: none; background-color: white; }
-        .marco-bodega { width: 100%; height: 75vh; border: none; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); background-color: white; }
-        .instrucciones { font-size: 12px; color: #718096; text-align: center; margin-top: 10px; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; background-color: #f8f9fa; text-align: center; }
+        header { padding: 30px 20px; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; }
+        .contenedor { max-width: 500px; margin: 0 auto; padding: 20px; }
+        .boton-app { display: inline-block; background-color: #2ed573; color: white; padding: 15px 30px; font-size: 18px; font-weight: bold; text-decoration: none; border-radius: 30px; box-shadow: 0 4px 10px rgba(46, 213, 115, 0.3); margin-top: 30px; transition: transform 0.2s; }
+        .boton-app:active { transform: scale(0.95); }
+        p { color: #555; line-height: 1.6; }
     </style>
 </head>
 <body>
 
     <header>
         <h1>Bodega La Barata</h1>
-        <p>Inventario y Precios Oficiales</p>
+        <p>Inventario y Precios Digitales</p>
     </header>
 
     <div class="contenedor">
-        <!-- Buscador integrado con el sistema de Google -->
-        <input type="text" id="buscar" class="buscador" placeholder="🔍 Buscar producto en la lista..." onkeyup="filtrarContenido()">
-
-        <!-- Visor dinámico interactivo directo de tu Google Sheets sin restricciones -->
-        <iframe id="tabla-bodega" class="marco-bodega" src="https://google.com"></iframe>
+        <h2>¡Tu inventario está listo!</h2>
+        <p>Para añadir productos, cambiar precios con un toque y que tus clientes lo vean todo ordenado como una aplicación real en su teléfono, haz clic abajo:</p>
         
-        <p class="instrucciones">Desliza hacia abajo dentro del recuadro para ver más artículos.</p>
+        <!-- Enlace directo para abrir la app oficial desde tu hoja de Google Sheets -->
+        <a href="https://appsheet.com" target="_blank" class="boton-app">📱 Abrir Mi Bodega Digital</a>
     </div>
 
-    <script>
-        function filtrarContenido() {
-            const entrada = document.getElementById('buscar').value.toLowerCase();
-            const iframe = document.getElementById('tabla-bodega');
-            
-            try {
-                const docInterno = iframe.contentDocument || iframe.contentWindow.document;
-                const filas = docInterno.querySelectorAll('table tbody tr');
-                
-                filas.forEach((fila, indice) => {
-                    if (indice === 0) return; // Ignora los encabezados
-                    const textoFila = fila.innerText.toLowerCase();
-                    if (textoFila.includes(entrada)) {
-                        fila.style.display = "";
-                    } else {
-                        fila.style.display = "none";
-                    }
-                });
-            } catch (e) {
-                // Si el navegador aplica restricción estricta de lectura de iframe,
-                // redirige automáticamente la búsqueda nativa de Google Sheets incorporada
-                console.log("Filtrado optimizado por motor de búsqueda integrado.");
-            }
-        }
-    </script>
 </body>
 </html>
