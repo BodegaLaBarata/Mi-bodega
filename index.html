@@ -16,6 +16,7 @@
         .producto-card h3 { margin: 0 0 5px 0; font-size: 16px; color: #1a202c; font-weight: 600; }
         .producto-card p { margin: 0; font-size: 13px; color: #718096; }
         .precio { font-weight: 700; color: #2ed573; font-size: 20px; margin-top: 12px; background: #e8fbf1; padding: 4px 10px; border-radius: 20px; display: inline-block; align-self: center; }
+        .cargando { text-align: center; font-size: 16px; color: #718096; padding: 40px 0; grid-column: 1/-1; }
     </style>
 </head>
 <body>
@@ -29,39 +30,21 @@
         <input type="text" id="buscar" class="buscador" placeholder="🔍 Buscar producto..." onkeyup="filtrarProductos()">
 
         <div class="grid-productos" id="lista-productos">
-            <!-- Los productos se cargan directamente desde aquí de forma ultra rápida -->
+            <div class="cargando" id="mensaje">Conectando con Google Sheets...</div>
         </div>
     </div>
 
     <script>
-        // PANEL DE CONTROL DIRECTO: Aquí agregas o editas tus productos fácilmente
-        const MIS_PRODUCTOS = [
-            { nombre: "Harina Kaly", presentacion: "Kilo", precio: "680.00" },
-            // { nombre: "Arroz Integral", presentacion: "Kilo", precio: "320.00" },
-            // Para añadir otro producto copia la línea de arriba, quítale las dos barras // y edita los textos
-        ];
-
-        function cargarProductos() {
-            const contenedor = document.getElementById('lista-productos');
-            contenedor.innerHTML = ''; 
-
-            MIS_PRODUCTOS.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'producto-card';
-                card.innerHTML = `
-                    <h3>${item.nombre}</h3>
-                    <p>${item.presentacion}</p>
-                    <div class="precio">$${item.precio}</div>
-                `;
-                contenedor.appendChild(card);
-            });
-        }
+        // ID de tu hoja real integrada directamente
+        const SHEET_ID = '1cDCjO_jVLAGGhDHl29_VVRhXtA1pFZqgw_2gxObKa4Y';
+        // Formato seguro de visualización jsonp para evitar bloqueos
+        const URL = `https://google.com{SHEET_ID}/gviz/tq?tqx=responseHandler:dibujarInterfaz`;
 
         function filtrarProductos() {
             let input = document.getElementById('buscar').value.toLowerCase();
             let cards = document.getElementsByClassName('producto-card');
             for (let i = 0; i < cards.length; i++) {
-                let nombre = cards[i].getElementsByTagName('h3')[0].innerText.toLowerCase();
+                let nombre = cards[i].getElementsByTagName('h3').innerText.toLowerCase();
                 if (nombre.includes(input)) {
                     cards[i].style.display = "";
                 } else {
@@ -70,8 +53,40 @@
             }
         }
 
-        // Ejecutar carga de inventario de inmediato
-        cargarProductos();
+        // Esta función procesa los datos y dibuja la página web real
+        function dibujarInterfaz(data) {
+            try {
+                const filas = data.table.rows;
+                const contenedor = document.getElementById('lista-productos');
+                contenedor.innerHTML = ''; 
+
+                filas.forEach((fila, index) => {
+                    // Nos saltamos la primera fila de títulos
+                    if (index > 0 && fila.c && fila.c[0]) {
+                        const nombre = fila.c[0].v;
+                        const presentacion = fila.c[1] ? fila.c[1].v : 'Unidad';
+                        const precio = fila.c[2] ? fila.c[2].v : '0.00';
+
+                        const card = document.createElement('div');
+                        card.className = 'producto-card';
+                        card.innerHTML = `
+                            <h3>${nombre}</h3>
+                            <p>${presentacion}</p>
+                            <div class="precio">$${Number(precio).toFixed(2)}</div>
+                        `;
+                        contenedor.appendChild(card);
+                    }
+                });
+            } catch (error) {
+                document.getElementById('mensaje').innerText = 'Revisa la estructura de tu Excel.';
+                console.error(error);
+            }
+        }
+
+        // Llamada nativa segura sin bloqueos CORS
+        const script = document.createElement('script');
+        script.src = URL;
+        document.body.appendChild(script);
     </script>
 </body>
 </html>
