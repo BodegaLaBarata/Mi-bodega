@@ -11,10 +11,8 @@
         header p { margin: 5px 0 0 0; opacity: 0.9; font-size: 14px; }
         .contenedor { max-width: 600px; margin: 0 auto; padding: 20px; box-sizing: border-box; }
         .buscador { width: 100%; padding: 15px 20px; margin-bottom: 25px; border: none; border-radius: 30px; box-sizing: border-box; font-size: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: all 0.3s ease; outline: none; background-color: white; }
-        .buscador:focus { box-shadow: 0 4px 12px rgba(42, 82, 152, 0.2); }
         .grid-productos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
-        .producto-card { background: white; padding: 20px 15px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); text-align: center; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid #edf2f7; transition: transform 0.2s; }
-        .producto-card:active { transform: scale(0.98); }
+        .producto-card { background: white; padding: 20px 15px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); text-align: center; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid #edf2f7; }
         .producto-card h3 { margin: 0 0 5px 0; font-size: 16px; color: #1a202c; font-weight: 600; }
         .producto-card p { margin: 0; font-size: 13px; color: #718096; }
         .precio { font-weight: 700; color: #2ed573; font-size: 20px; margin-top: 12px; background: #e8fbf1; padding: 4px 10px; border-radius: 20px; display: inline-block; align-self: center; }
@@ -37,39 +35,40 @@
     </div>
 
     <script>
-        // Tu ID real ya configurado de Google Sheets
         const SPREADSHEET_ID = '1cDCjO_jVLAGGhDHl29_VVRhXtA1pFZqgw_2gxObKa4Y';
-        const TAB_NAME = 'Hoja 1'; 
-        
-        const URL = `https://google.com{SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=${TAB_NAME}`;
+        // Usamos el formato CSV que es mucho más compatible con permisos móviles
+        const URL = `https://google.com{SPREADSHEET_ID}/export?format=csv`;
 
         async function cargarProductos() {
             try {
                 const respuesta = await fetch(URL);
                 const texto = await respuesta.text();
-                const jsonContenido = JSON.parse(texto.substr(47).slice(0, -2));
-                const filas = jsonContenido.table.rows;
                 
+                // Dividir el texto por líneas de la tabla
+                const lineas = texto.split('\n');
                 const contenedor = document.getElementById('lista-productos');
                 contenedor.innerHTML = ''; 
 
-                filas.forEach((fila, index) => {
-                    // Ignora la primera fila de títulos (Nombre, Presentación, Precio)
-                    if(index > 0 && fila.c && fila.c[0] && fila.c[0].v) {
-                        const nombre = fila.c[0].v;
-                        const presentacion = (fila.c[1] && fila.c[1].v) ? fila.c[1].v : 'Unidad';
-                        const precio = (fila.c[2] && fila.c[2].v) ? fila.c[2].v : '0.00';
+                for(let i = 1; i < lineas.length; i++) {
+                    if(lineas[i].trim() === '') continue;
+                    
+                    // Separar las columnas por comas
+                    const columnas = lineas[i].split(',');
+                    const nombre = columnas[0] ? columnas[0].replace(/"/g, '') : '';
+                    const presentacion = columnas[1] ? columnas[1].replace(/"/g, '') : 'Unidad';
+                    const precio = columnas[2] ? columnas[2].replace(/"/g, '') : '0.00';
 
+                    if(nombre) {
                         const card = document.createElement('div');
                         card.className = 'producto-card';
                         card.innerHTML = `
                             <h3>${nombre}</h3>
                             <p>${presentacion}</p>
-                            <div class="precio">$${Number(precio).toFixed(2)}</div>
+                            <div class="precio">$${precio}</div>
                         `;
                         contenedor.appendChild(card);
                     }
-                });
+                }
             } catch (error) {
                 document.getElementById('mensaje').innerText = 'No se pudo cargar el menú. Verifica la conexión.';
                 console.error(error);
