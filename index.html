@@ -5,51 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bodega La Barata</title>
     <style>
-        body { font-family: system-ui, sans-serif; margin: 0; padding: 0; background: #f8f9fa; color: #2d3748; }
-        header { text-align: center; padding: 25px 20px; background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; border-radius: 0 0 20px 20px; }
-        header h1 { margin: 0; font-size: 26px; }
-        .contenedor { max-width: 600px; margin: 0 auto; padding: 20px; box-sizing: border-box; }
-        .seccion-pagos { background: white; padding: 15px; border-radius: 16px; border: 1px solid #edf2f7; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-        .tag-pago { background: #edf2f7; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; margin-right: 5px; }
-        .datos-pago-movil { background: #f7fafc; border-left: 4px solid #2a5298; padding: 10px; margin-top: 10px; font-size: 13px; border-radius: 0 8px 8px 0; }
-        .buscador { width: 100%; padding: 15px; margin-bottom: 20px; border: 1px solid #edf2f7; border-radius: 30px; box-sizing: border-box; font-size: 16px; outline: none; }
-        .grid-productos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
-        .producto-card { background: white; padding: 15px; border-radius: 16px; border: 1px solid #edf2f7; position: relative; display: flex; flex-direction: column; justify-content: space-between; min-height: 180px; box-sizing: border-box; }
-        .producto-card.tarjeta-agotado { opacity: 0.55; background: #fff5f5; border-color: #fed7d7; }
-        .badge-agotado { display: none; background: #e53e3e; color: white; font-size: 9px; font-weight: bold; padding: 2px 6px; border-radius: 4px; position: absolute; top: 10px; right: 10px; text-transform: uppercase; }
-        .producto-card.tarjeta-agotado .badge-agotado { display: block; }
-        .linea-dato { font-size: 14px; margin-bottom: 5px; }
-        .precio-bloque { margin-top: 10px; background: #e8fbf1; padding: 5px 10px; border-radius: 20px; display: inline-block; width: fit-content; }
-        .producto-card.tarjeta-agotado .precio-bloque { background: #fee2e2; }
-        .precio-texto { font-weight: bold; color: #2ed573; font-size: 16px; }
-        .producto-card.tarjeta-agotado .precio-texto { color: #e53e3e; }
-        .btn-whatsapp { display: block; width: 100%; background: #25d366; color: white; border: none; padding: 8px; border-radius: 20px; font-weight: bold; font-size: 12px; cursor: pointer; margin-top: 12px; text-align: center; text-decoration: none; box-sizing: border-box; }
-        .producto-card.tarjeta-agotado .btn-whatsapp { display: none; }
-        #vista-cliente { display: block; }
-        #vista-admin { display: none; background: white; padding: 25px 20px; border-radius: 20px; border: 1px solid #edf2f7; margin-top: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .form-control { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #cbd5e0; border-radius: 10px; box-sizing: border-box; font-size: 15px; }
-        .btn { width: 100%; background: #2a5298; color: white; border: none; padding: 14px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 16px; }
-        .btn-bloqueo { display: block; width: 100%; text-align: center; color: #a0aec0; font-size: 13px; margin: 35px 0 10px 0; text-decoration: underline; background: none; border: none; cursor: pointer; font-weight: 500; }
-        .btn-borrar { position: absolute; top: 8px; right: 8px; background: #ff4757; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; font-size: 12px; cursor: pointer; display: none; font-weight: bold; }
+        body{font-family:system-ui,sans-serif;margin:0;padding:0;background:#f8f9fa;color:#2d3748}
+        header{text-align:center;padding:20px;background:linear-gradient(135deg,#1e3c72,#2a5298);color:white;border-radius:0 0 20px 20px}
+        header h1{margin:0;font-size:24px}
+        .contenedor{max-width:600px;margin:0 auto;padding:15px;box-sizing:border-box}
+        .seccion-pagos{background:white;padding:15px;border-radius:16px;border:1px solid #edf2f7;margin-bottom:15px}
+        .tag-pago{background:#edf2f7;padding:4px 10px;border-radius:12px;font-size:12px;font-weight:bold;margin-right:5px;display:inline-block}
+        .datos-pago-movil{background:#f7fafc;border-left:4px solid #2a5298;padding:10px;margin-top:10px;font-size:13px;border-radius:0 8px 8px 0}
+        .buscador{width:100%;padding:15px;margin-bottom:15px;border:1px solid #edf2f7;border-radius:30px;box-sizing:border-box;font-size:16px;outline:none}
+        .grid-productos{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px}
+        .producto-card{background:white;padding:12px;border-radius:16px;border:1px solid #edf2f7;position:relative;display:flex;flex-direction:column;justify-content:space-between;min-height:160px;box-sizing:border-box}
+        .producto-card.tarjeta-agotado{opacity:0.55;background:#fff5f5;border-color:#fed7d7}
+        .badge-agotado{display:none;background:#e53e3e;color:white;font-size:9px;font-weight:bold;padding:2px 6px;border-radius:4px;position:absolute;top:10px;right:10px;text-transform:uppercase}
+        .producto-card.tarjeta-agotado .badge-agotado{display:block}
+        .linea-dato{font-size:13px;margin-bottom:4px}
+        .precio-bloque{margin-top:5px;background:#e8fbf1;padding:4px 8px;border-radius:20px;display:inline-block;width:fit-content}
+        .producto-card.tarjeta-agotado .precio-bloque{background:#fee2e2}
+        .precio-texto{font-weight:bold;color:#2ed573;font-size:15px}
+        .producto-card.tarjeta-agotado .precio-texto{color:#e53e3e}
+        .btn-whatsapp{display:block;width:100%;background:#25d366;color:white;border:none;padding:8px;border-radius:20px;font-weight:bold;font-size:12px;cursor:pointer;margin-top:8px;text-align:center;text-decoration:none;box-sizing:border-box}
+        .producto-card.tarjeta-agotado .btn-whatsapp{display:none}
+        #vista-cliente{display:block}
+        #vista-admin{display:none;background:white;padding:20px;border-radius:20px;border:1px solid #edf2f7;margin-top:10px}
+        .form-control{width:100%;padding:10px;margin-bottom:10px;border:1px solid #cbd5e0;border-radius:8px;box-sizing:border-box;font-size:14px}
+        .btn{width:100%;background:#2a5298;color:white;border:none;padding:12px;border-radius:8px;font-weight:bold;cursor:pointer;font-size:15px}
+        .btn-bloqueo{display:block;width:100%;text-align:center;color:#a0aec0;font-size:13px;margin:25px 0 5px 0;text-decoration:underline;background:none;border:none;cursor:pointer}
+        .btn-borrar{position:absolute;top:8px;right:8px;background:#ff4757;color:white;border:none;border-radius:50%;width:22px;height:22px;font-size:11px;cursor:pointer;display:none;font-weight:bold}
     </style>
 </head>
 <body>
     <header>
         <h1>Bodega La Barata</h1>
-        <p>Precios y Disponibilidad en Tiempo Real</p>
+        <p style="margin:5px 0 0 0;font-size:13px;opacity:0.9">Precios y Disponibilidad en Tiempo Real</p>
     </header>
     <div class="contenedor">
         <div id="vista-cliente">
             <div class="seccion-pagos">
-                <h3 style="margin:0 0 10px 0; font-size:14px; color:#1e3c72;">💳 MÉTODOS DE PAGO</h3>
-                <span class="tag-pago">🔵 Biopago</span>
-                <span class="tag-pago">💵 Efectivo</span>
-                <span class="tag-pago">📱 Pago Móvil</span>
+                <h3 style="margin:0 0 8px 0;font-size:13px;color:#1e3c72">💳 MÉTODOS DE PAGO</h3>
+                <span class="tag-pago">🔵 Biopago</span><span class="tag-pago">💵 Efectivo</span><span class="tag-pago">📱 Pago Móvil</span>
                 <div class="datos-pago-movil">
                     <strong>Datos de Pago Móvil:</strong><br>
-                    🏦 Banco Venezuela (0102)<br>
-                    📞 Teléfono: 04141207012<br>
-                    🆔 C.I: 27283211
+                    🏦 Banco Venezuela (0102)<br>📞 Teléfono: 04141207012<br>🆔 C.I: 27283211
                 </div>
             </div>
             <input type="text" id="buscar" class="buscador" placeholder="🔍 Buscar producto..." oninput="filtrarProductos()">
@@ -57,13 +53,13 @@
             <button class="btn-bloqueo" id="btn-entrar" onclick="verificarAcceso()">⚙️ Acceso Administrador</button>
         </div>
         <div id="vista-admin">
-            <h2 style="margin:0 0 15px 0; font-size:20px; color:#1e3c72; text-align:center;">⚙️ Panel de Inventario</h2>
+            <h2 style="margin:0 0 12px 0;font-size:18px;color:#1e3c72;text-align:center">⚙️ Panel de Inventario</h2>
             <input type="text" id="prod-nombre" class="form-control" placeholder="Nombre del Producto">
             <input type="text" id="prod-presentacion" class="form-control" placeholder="Disponibilidad (Ej: Kilo / Agotado)">
             <input type="number" id="prod-precio" class="form-control" placeholder="Precio (Bs.)" step="0.01">
             <button class="btn" onclick="agregarOEditarProducto()">💾 Guardar Producto en la Web</button>
-            <button class="btn" style="background:#718096; margin-top:8px;" onclick="cerrarPanel()">🔒 Cerrar Panel (Clientes)</button>
-            <h3 style="margin:25px 0 10px 0; font-size:14px; color:#4a5568;">Lista Actual (Presiona X para eliminar):</h3>
+            <button class="btn" style="background:#718096;margin-top:6px" onclick="cerrarPanel()">🔒 Cerrar Panel (Clientes)</button>
+            <h3 style="margin:20px 0 8px 0;font-size:13px;color:#4a5568">Lista Actual (Presiona X para eliminar):</h3>
             <div class="grid-productos" id="lista-productos-admin"></div>
         </div>
     </div>
@@ -74,32 +70,32 @@
             { id: 1, nombre: "Harina Kaly", presentacion: "Kilo", precio: "680.00" },
             { id: 2, nombre: "Arroz Primor", presentacion: "Agotado", precio: "520.00" }
         ];
-        let inventario = JSON.parse(localStorage.getItem('inventario_estable_v2'));
+        let inventario = JSON.parse(localStorage.getItem('inv_estable_def_v1'));
         if (!inventario || inventario.length === 0) {
             inventario = prodDefecto;
-            localStorage.setItem('inventario_estable_v2', JSON.stringify(inventario));
+            localStorage.setItem('inv_estable_def_v1', JSON.stringify(inventario));
         }
         function renderizarProductos() {
             const cc = document.getElementById('lista-productos'); cc.innerHTML = '';
             const ca = document.getElementById('lista-productos-admin'); ca.innerHTML = '';
             if (inventario.length === 0) {
-                const msg = '<p style="grid-column:1/-1; text-align:center; color:#a0aec0;">No hay productos.</p>';
+                const msg = '<p style="grid-column:1/-1;text-align:center;color:#a0aec0;">No hay productos.</p>';
                 cc.innerHTML = msg; ca.innerHTML = msg; return;
             }
             inventario.forEach(p => {
                 const esAgotado = p.presentacion.toLowerCase().includes('agotado');
                 const pf = parseFloat(p.precio).toFixed(2);
-                const txt = encodeURIComponent(`👋 ¡Hola! Me interesa comprar:\n\n📦 *Producto:* ${p.nombre}\n📌 *Estado:* ${p.presentacion}\n💰 *Precio:* Bs. ${pf}\n\nRealizaré Pago Móvil a:\n🏦 Banco de Venezuela (0102)\n📞 04141207012\n🆔 C.I: 27283211\n\n¿Disponibilidad?`);
+                const txt = encodeURIComponent(`👋 ¡Hola! Me interesa comprar:\n📦 *Producto:* ${p.nombre}\n📌 *Estado:* ${p.presentacion}\n💰 *Precio:* Bs. ${pf}\n\nPago Móvil a:\n🏦 Banco de Venezuela (0102)\n📞 04141207012\n🆔 C.I: 27283211`);
                 const link = `https://wa.me{NUMERO_WHATSAPP}?text=${txt}`;
                 
                 const cardC = document.createElement('div');
                 cardC.className = `producto-card ${esAgotado ? 'tarjeta-agotado' : ''}`;
-                cardC.innerHTML = `<div><span class="badge-agotado">Agotado</span><div class="linea-dato"><b style="color:#718096; font-size:10px; display:block;">NOMBRE</b><b>${p.nombre}</b></div><div class="linea-dato"><b style="color:#718096; font-size:10px; display:block;">ESTADO</b>${p.presentacion}</div><div class="precio-bloque"><span class="precio-texto">Bs. ${pf}</span></div></div><a href="${link}" target="_blank" class="btn-whatsapp">📲 Pedir por WhatsApp</a>`;
+                cardC.innerHTML = `<div><span class="badge-agotado">Agotado</span><div class="linea-dato"><b style="color:#718096;font-size:10px;display:block">NOMBRE</b><b>${p.nombre}</b></div><div class="linea-dato"><b style="color:#718096;font-size:10px;display:block">ESTADO</b>${p.presentacion}</div><div class="precio-bloque"><span class="precio-texto">Bs. ${pf}</span></div></div><a href="${link}" target="_blank" class="btn-whatsapp">📲 Pedir</a>`;
                 cc.appendChild(cardC);
 
                 const cardA = document.createElement('div');
                 cardA.className = `producto-card ${esAgotado ? 'tarjeta-agotado' : ''}`;
-                cardA.innerHTML = `<div><button class="btn-borrar" style="display:block;" onclick="eliminarProducto(${p.id})">X</button><span class="badge-agotado">Agotado</span><div class="linea-dato"><b style="color:#718096; font-size:10px; display:block;">NOMBRE</b><b>${p.nombre}</b></div><div class="linea-dato"><b style="color:#718096; font-size:10px; display:block;">ESTADO</b>${p.presentacion}</div><div class="precio-bloque"><span class="precio-texto">Bs. ${pf}</span></div></div>`;
+                cardA.innerHTML = `<div><button class="btn-borrar" style="display:block" onclick="eliminarProducto(${p.id})">X</button><span class="badge-agotado">Agotado</span><div class="linea-dato"><b style="color:#718096;font-size:10px;display:block">NOMBRE</b><b>${p.nombre}</b></div><div class="linea-dato"><b style="color:#718096;font-size:10px;display:block">ESTADO</b>${p.presentacion}</div><div class="precio-bloque"><span class="precio-texto">Bs. ${pf}</span></div></div>`;
                 ca.appendChild(cardA);
             });
         }
@@ -107,9 +103,16 @@
             const txt = document.getElementById('buscar').value.toLowerCase().trim();
             const f = inventario.filter(p => p.nombre.toLowerCase().includes(txt) || p.presentacion.toLowerCase().includes(txt));
             const cc = document.getElementById('lista-productos'); cc.innerHTML = '';
-            if (f.length === 0) { cc.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#a0aec0;">No hay coincidencias.</p>'; return; }
+            if (f.length === 0) { cc.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#a0aec0;">No hay coincidencias.</p>'; return; }
             f.forEach(p => {
                 const esAgotado = p.presentacion.toLowerCase().includes('agotado');
                 const pf = parseFloat(p.precio).toFixed(2);
-                const txtW = encodeURIComponent(`👋 ¡Hola! Me interesa comprar:\n\n📦 *Producto:* ${p.nombre}\n📌 *Estado:* ${p.presentacion}\n💰 *Precio:* Bs. ${pf}\n\nRealizaré Pago Móvil a:\n🏦 Banco de Venezuela (0102)\n📞 04141207012\n🆔 C.I: 27283211\n\n¿Disponibilidad?`);
+                const txtW = encodeURIComponent(`👋 ¡Hola! Me interesa comprar:\n📦 *Producto:* ${p.nombre}\n📌 *Estado:* ${p.presentacion}\n💰 *Precio:* Bs. ${pf}`);
                 const link = `https://wa.me{NUMERO_WHATSAPP}?text=${txtW}`;
+                const card = document.createElement('div');
+                card.className = `producto-card ${esAgotado ? 'tarjeta-agotado' : ''}`;
+                card.innerHTML = `<div><span class="badge-agotado">Agotado</span><div class="linea-dato"><b style="color:#718096;font-size:10px;display:block">NOMBRE</b><b>${p.nombre}</b></div><div class="linea-dato"><b style="color:#718096;font-size:10px;display:block">ESTADO</b>${p.presentacion}</div><div class="precio-bloque"><span class="precio-texto">Bs. ${pf}</span></div></div><a href="${link}" target="_blank" class="btn-whatsapp">📲 Pedir</a>`;
+                cc.appendChild(card);
+            });
+        }
+        function verificarAcceso() {
