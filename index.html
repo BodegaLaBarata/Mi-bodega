@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bodega La Barata</title>
     <style>
-        body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 0; background: #f8f9fa; color: #2d3748; }
+        body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 0; background: #f8f9fa; color: #2d3748; padding-bottom: 80px; }
         header { text-align: center; padding: 25px 20px; background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; border-radius: 0 0 20px 20px; }
         header h1 { margin: 0; font-size: 26px; }
         .contenedor { max-width: 600px; margin: 0 auto; padding: 20px; box-sizing: border-box; }
@@ -14,15 +14,33 @@
         .datos-pago-movil { background: #f7fafc; border-left: 4px solid #2a5298; padding: 10px; margin-top: 10px; font-size: 13px; border-radius: 0 8px 8px 0; }
         .buscador { width: 100%; padding: 15px; margin-bottom: 20px; border: 1px solid #edf2f7; border-radius: 30px; box-sizing: border-box; font-size: 16px; outline: none; }
         .grid-productos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
-        .producto-card { background: white; padding: 15px; border-radius: 16px; border: 1px solid #edf2f7; position: relative; }
+        .producto-card { background: white; padding: 15px; border-radius: 16px; border: 1px solid #edf2f7; position: relative; display: flex; flex-direction: column; justify-content: space-between; }
         .producto-card.tarjeta-agotado { opacity: 0.55; background: #fff5f5; border-color: #fed7d7; }
         .badge-agotado { display: none; background: #e53e3e; color: white; font-size: 9px; font-weight: bold; padding: 2px 6px; border-radius: 4px; position: absolute; top: 10px; right: 10px; }
         .producto-card.tarjeta-agotado .badge-agotado { display: block; }
         .linea-dato { font-size: 14px; margin-bottom: 5px; }
-        .precio-bloque { margin-top: 10px; background: #e8fbf1; padding: 5px 10px; border-radius: 20px; display: inline-block; }
+        .precio-bloque { margin-top: 10px; background: #e8fbf1; padding: 5px 10px; border-radius: 20px; display: inline-block; text-align: center; }
         .producto-card.tarjeta-agotado .precio-bloque { background: #fee2e2; }
         .precio-texto { font-weight: bold; color: #2ed573; font-size: 16px; }
         .producto-card.tarjeta-agotado .precio-texto { color: #e53e3e; }
+        
+        /* Botón Añadir al Carrito */
+        .btn-agregar-carrito { width: 100%; background: #2a5298; color: white; border: none; padding: 8px; margin-top: 10px; border-radius: 20px; font-weight: bold; font-size: 12px; cursor: pointer; transition: background 0.2s; }
+        .btn-agregar-carrito:hover { background: #1e3c72; }
+        .producto-card.tarjeta-agotado .btn-agregar-carrito { display: none; }
+
+        /* Barra Fija Inferior del Carrito */
+        .barra-carrito-fija { position: fixed; bottom: 0; left: 0; right: 0; background: white; box-shadow: 0 -4px 15px rgba(0,0,0,0.1); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; border-radius: 20px 20px 0 0; }
+        .info-carrito-fijo { font-size: 15px; font-weight: bold; color: #2d3748; }
+        .btn-ver-pedido { background: #2ed573; color: white; border: none; padding: 10px 20px; border-radius: 25px; font-weight: bold; cursor: pointer; font-size: 14px; }
+
+        /* Ventana Emergente (Modal) del Carrito */
+        .modal-carrito { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: flex-end; }
+        .contenido-modal { background: white; width: 100%; max-width: 600px; border-radius: 25px 25px 0 0; padding: 25px; box-sizing: border-box; max-height: 85vh; overflow-y: auto; }
+        .item-carrito { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #edf2f7; }
+        .controles-cantidad { display: flex; align-items: center; gap: 8px; }
+        .btn-cant { background: #edf2f7; border: none; width: 26px; height: 26px; border-radius: 50%; font-weight: bold; cursor: pointer; }
+        
         .panel-admin { background: white; padding: 20px; border-radius: 16px; border: 1px dashed #2a5298; display: none; margin-top: 20px; }
         .form-control { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #cbd5e0; border-radius: 8px; box-sizing: border-box; }
         .btn { width: 100%; background: #2a5298; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
@@ -67,8 +85,38 @@
         </div>
     </div>
 
+    <div class="barra-carrito-fija" id="barra-carrito" style="display: none;">
+        <div class="info-carrito-fijo">
+            🛒 <span id="cant-items-fijo">0</span> prod. | <span id="total-fijo" style="color:#2ed573;">0.00</span> Bs.
+        </div>
+        <button class="btn-ver-pedido" onclick="abrirModalCarrito()">📋 Ver Pedido</button>
+    </div>
+
+    <div class="modal-carrito" id="modal-carrito" onclick="cerrarModalCarritoExterno(event)">
+        <div class="contenido-modal">
+            <h3 style="margin-top:0; color:#1e3c72; border-bottom:2px solid #edf2f7; padding-bottom:10px; display:flex; justify-content:space-between;">
+                <span>📋 Tu Pedido</span>
+                <span style="cursor:pointer; color:#718096;" onclick="cerrarModalCarrito()">✕</span>
+            </h3>
+            
+            <div id="lista-items-carrito" style="margin: 15px 0; max-height: 40vh; overflow-y: auto;">
+                </div>
+
+            <div style="font-size:18px; font-weight:bold; display:flex; justify-content:space-between; margin:20px 0 15px 0;">
+                <span>Total a Pagar:</span>
+                <span style="color:#2ed573;" id="total-modal">0.00 Bs.</span>
+            </div>
+
+            <button class="btn" style="background:#2ed573; display:flex; align-items:center; justify-content:center; gap:8px; font-size:16px;" onclick="enviarPedidoWhatsApp()">
+                📱 Enviar Pedido por WhatsApp
+            </button>
+        </div>
+    </div>
+
     <script>
         const CLAVE_SECRETA = '2310';
+        const TELEFONO_BODEGA = '584141207012'; 
+        
         const prodDefecto = [
             { id: 1, nombre: "Harina Kaly", presentacion: "Kilo", precio: "680.00" },
             { id: 2, nombre: "Arroz Primor", presentacion: "Agotado", precio: "520.00" }
@@ -80,6 +128,7 @@
             localStorage.setItem('inventario_bodega', JSON.stringify(inventario));
         }
 
+        let carrito = [];
         let modoAdminActivo = false;
 
         function renderizarProductos(lista = inventario) {
@@ -94,29 +143,147 @@
                 const esAgotado = prod.presentacion.toLowerCase().includes('agotado');
                 card.className = `producto-card ${esAgotado ? 'tarjeta-agotado' : ''}`;
                 card.innerHTML = `
-                    <button class="btn-borrar" onclick="eliminarProducto(${prod.id})">X</button>
+                    <button class="btn-borrar" onclick="eliminarProducto(${prod.id}, event)">X</button>
                     <span class="badge-agotado">Agotado</span>
                     <div class="linea-dato"><b style="color:#718096; font-size:10px; display:block;">NOMBRE</b><b>${prod.nombre}</b></div>
                     <div class="linea-dato"><b style="color:#718096; font-size:10px; display:block;">ESTADO</b>${prod.presentacion}</div>
                     <div class="precio-bloque">
-                        <span class="precio-texto">Bs. ${parseFloat(prod.precio).toFixed(2)}</span>
+                        <span class="precio-texto">${parseFloat(prod.precio).toFixed(2)} Bs.</span>
                     </div>
+                    <button class="btn-agregar-carrito" onclick="añadirAlCarrito(${prod.id})">🛒 Añadir</button>
                 `;
                 if(modoAdminActivo) card.querySelector('.btn-borrar').style.display = "block";
                 contenedor.appendChild(card);
             });
         }
 
+        /* OPERACIONES DEL CARRITO */
+        function añadirAlCarrito(id) {
+            const producto = inventario.find(p => p.id === id);
+            if (!producto) return;
+
+            const itemEnCarrito = carrito.find(item => item.id === id);
+            if (itemEnCarrito) {
+                itemEnCarrito.cantidad++;
+            } else {
+                carrito.push({ ...producto, cantidad: 1 });
+            }
+            actualizarInterfazCarrito();
+        }
+
+        function cambiarCantidad(id, cambio) {
+            const item = carrito.find(item => item.id === id);
+            if (!item) return;
+
+            item.cantidad += cambio;
+            if (item.cantidad <= 0) {
+                carrito = carrito.filter(item => item.id !== id);
+            }
+            actualizarInterfazCarrito();
+            actualizarModalCarrito();
+        }
+
+        function actualizarInterfazCarrito() {
+            const barra = document.getElementById('barra-carrito');
+            if (carrito.length === 0) {
+                barra.style.display = 'none';
+                return;
+            }
+
+            barra.style.display = 'flex';
+            const totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
+            const totalMonto = carrito.reduce((sum, item) => sum + (parseFloat(item.precio) * item.cantidad), 0);
+
+            document.getElementById('cant-items-fijo').innerText = totalItems;
+            document.getElementById('total-fijo').innerText = totalMonto.toFixed(2);
+        }
+
+        /* MODAL INTERACTIVO */
+        function abrirModalCarrito() {
+            document.getElementById('modal-carrito').style.display = 'flex';
+            actualizarModalCarrito();
+        }
+
+        function cerrarModalCarrito() {
+            document.getElementById('modal-carrito').style.display = 'none';
+        }
+
+        function cerrarModalCarritoExterno(e) {
+            if (e.target.id === 'modal-carrito') cerrarModalCarrito();
+        }
+
+        function actualizarModalCarrito() {
+            const contenedorItems = document.getElementById('lista-items-carrito');
+            const totalModal = document.getElementById('total-modal');
+            contenedorItems.innerHTML = '';
+
+            if (carrito.length === 0) {
+                contenedorItems.innerHTML = '<p style="text-align:center; color:#a0aec0; padding:20px;">Tu carrito está vacío.</p>';
+                totalModal.innerText = '0.00 Bs.';
+                cerrarModalCarrito();
+                return;
+            }
+
+            carrito.forEach(item => {
+                const fila = document.createElement('div');
+                fila.className = 'item-carrito';
+                const subtotal = parseFloat(item.precio) * item.cantidad;
+                fila.innerHTML = `
+                    <div>
+                        <div style="font-weight:bold; font-size:15px;">${item.nombre}</div>
+                        <div style="font-size:12px; color:#718096;">${parseFloat(item.precio).toFixed(2)} Bs. c/u</div>
+                    </div>
+                    <div class="controles-cantidad">
+                        <button class="btn-cant" onclick="cambiarCantidad(${item.id}, -1)">-</button>
+                        <span style="font-weight:bold; min-width:20px; text-align:center;">${item.cantidad}</span>
+                        <button class="btn-cant" onclick="cambiarCantidad(${item.id}, 1)">+</button>
+                        <span style="font-weight:bold; margin-left:15px; min-width:70px; text-align:right;">${subtotal.toFixed(2)} Bs.</span>
+                    </div>
+                `;
+                contenedorItems.appendChild(fila);
+            });
+
+            const totalMonto = carrito.reduce((sum, item) => sum + (parseFloat(item.precio) * item.cantidad), 0);
+            totalModal.innerText = `${totalMonto.toFixed(2)} Bs.`;
+        }
+
+        /* ENVIAR A WHATSAPP */
+        function enviarPedidoWhatsApp() {
+            if (carrito.length === 0) return;
+
+            let textoPedido = `🛒 *NUEVO PEDIDO - BODEGA LA BARATA*\n`;
+            textoPedido += `-------------------------------------------\n\n`;
+
+            carrito.forEach((item, index) => {
+                const subtotal = parseFloat(item.precio) * item.cantidad;
+                textoPedido += `${index + 1}) *${item.nombre}* (${item.presentacion})\n`;
+                textoPedido += `     Cantidad: ${item.cantidad} x ${parseFloat(item.precio).toFixed(2)} Bs.\n`;
+                textoPedido += `     Subtotal: *${subtotal.toFixed(2)} Bs.*\n\n`;
+            });
+
+            const totalMonto = carrito.reduce((sum, item) => sum + (parseFloat(item.precio) * item.cantidad), 0);
+            textoPedido += `-------------------------------------------\n`;
+            textoPedido += `💰 *TOTAL A PAGAR: ${totalMonto.toFixed(2)} Bs.*\n\n`;
+            textoPedido += `🙏 ¡Hola! Vengo de la página web de la bodega, aquí le dejo mi lista de compras para finiquitar el pedido.`;
+
+            const urlWhatsApp = `https://api.whatsapp.com/send?phone=${TELEFONO_BODEGA}&text=${encodeURIComponent(textoPedido)}`;
+            
+            window.open(urlWhatsApp, '_blank');
+        }
+
+        /* FILTRADO Y PANEL ADMIN */
         function filtrarProductos() {
             const txt = document.getElementById('buscar').value.toLowerCase().trim();
             renderizarProductos(inventario.filter(p => p.nombre.toLowerCase().includes(txt) || p.presentacion.toLowerCase().includes(txt)));
         }
 
+        function verificarAccAccess() {} // Mantener compatibilidad si es necesario
+
         function verificarAcceso() {
             var clave = prompt("Contraseña:");
             if (clave === CLAVE_SECRETA) {
                 modoAdminActivo = true;
-                document.getElementById('admin-section').style.display = "block"; // Corregido aquí
+                document.getElementById('admin-section').style.display = "block";
                 document.getElementById('btn-entrar').style.display = "none";
                 renderizarProductos();
             } else if (clave !== null) {
@@ -151,7 +318,8 @@
             renderizarProductos();
         }
 
-        function eliminarProducto(id) {
+        function eliminarProducto(id, event) {
+            event.stopPropagation(); 
             if(confirm("¿Eliminar?")) {
                 inventario = inventario.filter(x => x.id !== id);
                 localStorage.setItem('inventario_bodega', JSON.stringify(inventario));
