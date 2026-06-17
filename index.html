@@ -39,6 +39,12 @@
         .controles-cantidad { display: flex; align-items: center; gap: 8px; }
         .btn-cant { background: #edf2f7; border: none; width: 26px; height: 26px; border-radius: 50%; font-weight: bold; cursor: pointer; }
         
+        /* Selector de WhatsApp */
+        .selector-whatsapp { background: #f7fafc; padding: 12px; border-radius: 12px; border: 1px solid #edf2f7; margin-bottom: 15px; }
+        .opcion-telefono { display: flex; align-items: center; gap: 8px; font-size: 14px; margin-bottom: 8px; cursor: pointer; }
+        .opcion-telefono:last-child { margin-bottom: 0; }
+        .opcion-telefono input { cursor: pointer; width: 16px; height: 16px; }
+
         /* Admin */
         .panel-admin { background: white; padding: 20px; border-radius: 16px; border: 1px dashed #2a5298; display: none; margin-top: 20px; }
         .form-control { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #cbd5e0; border-radius: 8px; box-sizing: border-box; }
@@ -100,8 +106,22 @@
                 <span>📋 Tu Pedido</span>
                 <span style="cursor:pointer; color:#718096;" onclick="cerrarModalCarrito()">✕</span>
             </h3>
-            <div id="lista-items-carrito" style="margin: 15px 0; max-height: 40vh; overflow-y: auto;"></div>
-            <div style="font-size:18px; font-weight:bold; display:flex; justify-content:space-between; margin:20px 0 15px 0;">
+            
+            <div id="lista-items-carrito" style="margin: 15px 0; max-height: 35vh; overflow-y: auto;"></div>
+            
+            <div class="selector-whatsapp">
+                <h4 style="margin: 0 0 10px 0; font-size: 13px; color: #1e3c72;">📲 SELECCIONA EL NÚMERO DE ENVÍO:</h4>
+                <label class="opcion-telefono">
+                    <input type="radio" name="num_whatsapp" value="584141207012" checked>
+                    <span>📱 Número Principal (0414-1207012)</span>
+                </label>
+                <label class="opcion-telefono">
+                    <input type="radio" name="num_whatsapp" value="584143229701">
+                    <span>📱 Número Secundario (0414-3229701)</span>
+                </label>
+            </div>
+
+            <div style="font-size:18px; font-weight:bold; display:flex; justify-content:space-between; margin:15px 0 15px 0;">
                 <span>Total a Pagar:</span>
                 <span style="color:#2ed573;" id="total-modal">0.00 Bs.</span>
             </div>
@@ -114,7 +134,6 @@
         const SUPABASE_KEY = 'sb_publishable_uWCQCXyG34oADvGHe_GC9Q_zzQHQ-jO'; 
         
         const CLAVE_SECRETA = '2310';
-        const TELEFONO_BODEGA = '584141207012'; 
 
         let inventario = [];
         let carrito = [];
@@ -275,10 +294,27 @@
             document.getElementById('total-modal').innerText = carrito.reduce((s, i) => s + (parseFloat(i.precio) * i.cantidad), 0).toFixed(2) + " Bs.";
         }
 
+        // FUNCIÓN ACTUALIZADA: Lee el número seleccionado, desglosa los totales y añade el aviso del capture
         function enviarPedidoWhatsApp() {
-            let t = `🛒 *NUEVO PEDIDO - BODEGA LA BARATA*\n\n`;
-            carrito.forEach(i => t += `- *${i.nombre}* x${i.cantidad}\n`);
-            window.open(`https://api.whatsapp.com/send?phone=${TELEFONO_BODEGA}&text=${encodeURIComponent(t)}`, '_blank');
+            const numSeleccionado = document.querySelector('input[name="num_whatsapp"]:checked').value;
+            let total = carrito.reduce((s, i) => s + (parseFloat(i.precio) * i.cantidad), 0).toFixed(2);
+            
+            let t = `🛒 *NUEVO PEDIDO - BODEGA LA BARATA*\n`;
+            t += `------------------------------------\n\n`;
+            
+            carrito.forEach(i => {
+                let subtotal = (parseFloat(i.precio) * i.cantidad).toFixed(2);
+                t += `▪️ *${i.nombre}*\n`;
+                t += `   ${i.cantidad} x ${parseFloat(i.precio).toFixed(2)} Bs. = *${subtotal} Bs.*\n\n`;
+            });
+            
+            t += `------------------------------------\n`;
+            t += `💰 *TOTAL A PAGAR: ${total} Bs.*\n\n`;
+            t += `📌 *Nota:* Recuerda adjuntar el capture de tu Pago Móvil en este chat una vez realizado el pago para procesar tu pedido.`;
+            
+            alert("✅ ¡Pedido generado!\n\nAl abrirse WhatsApp, envía el mensaje con tu lista. Recuerda que si vas a pagar con Pago Móvil, debes enviar el capture por ese mismo chat.");
+            
+            window.open(`https://api.whatsapp.com/send?phone=${numSeleccionado}&text=${encodeURIComponent(t)}`, '_blank');
         }
 
         function filtrarProductos() {
