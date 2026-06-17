@@ -106,7 +106,7 @@
 
     <script>
         const SUPABASE_URL = 'https://feitoqnhzwmjyezmusxs.supabase.co'; 
-        const SUPABASE_KEY = 'Hujannys$23'; 
+        const SUPABASE_KEY = 'sb_publishable_uWCQCXyG34oADvGHe_GC9Q_zzQHQ-jO'; 
         
         const CLAVE_SECRETA = '2310';
         const TELEFONO_BODEGA = '584141207012'; 
@@ -130,7 +130,7 @@
                 document.getElementById('estado-carga').style.display = 'none';
                 renderizarProductos();
             } catch (error) {
-                document.getElementById('estado-carga').innerText = "⚠️ Esperando sincronización de datos con Supabase...";
+                document.getElementById('estado-carga').innerText = "⚠️ Error de conexión. Revisa que las políticas RLS de Supabase permitan accesos públicos.";
             }
         }
 
@@ -180,7 +180,7 @@
                 document.getElementById('prod-presentacion').value = '';
                 document.getElementById('prod-precio').value = '';
                 await cargarInventarioDesdeNube();
-            } catch (error) { alert("Error al conectar con la base de datos."); }
+            } catch (error) { alert("Error al guardar en la base de datos."); }
         }
 
         async function eliminarProductoNube(id, event) {
@@ -195,7 +195,7 @@
         function añadirAlCarrito(id) {
             const p = inventario.find(x => x.id === id);
             const item = carrito.find(x => x.id === id);
-            if (item) item.cantidad++; else carrito.push({ ...p, Pattern, cantidad: 1 });
+            if (item) item.cantidad++; else carrito.push({ ...p, cantidad: 1 });
             actualizarInterfazCarrito();
         }
 
