@@ -14,7 +14,7 @@
         .datos-pago-movil { background: #f7fafc; border-left: 4px solid #2a5298; padding: 10px; margin-top: 10px; font-size: 13px; border-radius: 0 8px 8px 0; }
         .buscador { width: 100%; padding: 15px; margin-bottom: 20px; border: 1px solid #edf2f7; border-radius: 30px; box-sizing: border-box; font-size: 16px; outline: none; }
         .grid-productos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
-        .producto-card { background: white; padding: 15px; border-radius: 16px; border: 1px solid #edf2f7; position: relative; display: flex; flex-direction: column; justify-content: space-between; }
+        .producto-card { background: white; padding: 15px; border-radius: 16px; border: 1px solid #edf2f7; position: relative; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.2s ease; }
         .producto-card.tarjeta-agotado { opacity: 0.55; background: #fff5f5; border-color: #fed7d7; }
         .badge-agotado { display: none; background: #e53e3e; color: white; font-size: 9px; font-weight: bold; padding: 2px 6px; border-radius: 4px; position: absolute; top: 10px; right: 10px; }
         .producto-card.tarjeta-agotado .badge-agotado { display: block; }
@@ -23,6 +23,10 @@
         .producto-card.tarjeta-agotado .precio-bloque { background: #fee2e2; }
         .precio-texto { font-weight: bold; color: #2ed573; font-size: 16px; }
         .producto-card.tarjeta-agotado .precio-texto { color: #e53e3e; }
+        
+        /* Estilo especial cuando el administrador está activo */
+        .producto-card.modo-editable { border: 2px dashed #00c853 !important; cursor: pointer; }
+        .producto-card.modo-editable:hover { background: #f1fbf4; }
         
         /* Carrito y Botones */
         .btn-agregar-carrito { width: 100%; background: #2a5298; color: white; border: none; padding: 8px; margin-top: 10px; border-radius: 20px; font-weight: bold; font-size: 12px; cursor: pointer; }
@@ -74,6 +78,7 @@
 
         <div class="panel-admin" id="admin-section">
             <h2 style="margin:0 0 10px 0; font-size:16px;">⚙️ Panel de Inventario Nube</h2>
+            <p style="font-size: 12px; color: #4a5568; margin-top: 0;">💡 ¡Tip: Ahora también puedes tocar cualquier producto abajo para editarlo directamente!</p>
             <input type="text" id="prod-nombre" class="form-control" placeholder="Nombre del Producto">
             <input type="text" id="prod-presentacion" class="form-control" placeholder="Disponibilidad (Ej: Kilo / Agotado)">
             <input type="number" id="prod-precio" class="form-control" placeholder="Precio (Bs.)" step="0.01">
@@ -143,119 +148,60 @@
             }
             lista.forEach(prod => {
                 const card = document.createElement('div');
-                const esAgotado = prod.presentacion.toLowerCase().includes('agotado');
-                card.className = `producto-card ${esAgotado ? 'tarjeta-agotado' : ''}`;
+                const esAgotado = prod.presentacion && prod.presentacion.toLowerCase().includes('agotado');
+                card.className = `producto-card ${esAgotado ? 'tarjeta-agotado' : ''} ${modoAdminActivo ? 'modo-editable' : ''}`;
+                
                 card.innerHTML = `
                     <button class="btn-borrar" onclick="eliminarProductoNube(${prod.id}, event)">X</button>
                     <span class="badge-agotado">Agotado</span>
                     <div class="linea-dato"><b>${prod.nombre}</b></div>
-                    <div class="linea-dato"><small>${prod.presentacion}</small></div>
+                    <div class="linea-dato"><small>${prod.presentacion || 'Disponible'}</small></div>
                     <div class="precio-bloque"><span class="precio-texto">${parseFloat(prod.precio).toFixed(2)} Bs.</span></div>
                     <button class="btn-agregar-carrito" onclick="añadirAlCarrito(${prod.id})">🛒 Añadir</button>
                 `;
-                if(modoAdminActivo) card.querySelector('.btn-borrar').style.display = "block";
+                
+                if(modoAdminActivo) {
+                    card.querySelector('.btn-borrar').style.display = "block";
+                    // Al tocar el producto como administrador se activa la edición instantánea
+                    card.addEventListener('click', (e) => {
+                        // Evitamos que se active si tocó el botón de borrar o el de añadir carrito
+                        if(e.target.tagName !== 'BUTTON') {
+                            abrirEditorRapido(prod);
+                        }
+                    });
+                }
+                
                 contenedor.appendChild(card);
             });
         }
 
-        async function guardarEnSupabase() {
-            const n = document.getElementById('prod-nombre').value.trim();
-            const pr = document.getElementById('prod-presentacion').value.trim() || "Disponible";
-            const p = document.getElementById('prod-precio').value.trim();
-            if (!n || !p) return alert("Campos obligatorios vacíos.");
+        // Función nueva para editar directamente con un clic en la tarjeta
+        async function abrirEditorRapido(prod) {
+            const nuevoNombre = prompt("Editar nombre del producto:", prod.nombre);
+            if (nuevoNombre === null) return; 
+            
+            const nuevaPresentacion = prompt("Editar disponibilidad/stock:", prod.presentacion || 'Disponible');
+            if (nuevaPresentacion === null) return;
+
+            const nuevoPrecio = prompt("Editar precio (Bs.):", prod.precio);
+            if (nuevoPrecio === null) return;
 
             document.getElementById('estado-carga').style.display = 'block';
-            document.getElementById('estado-carga').innerText = "💾 Guardando en la nube...";
+            document.getElementById('estado-carga').innerText = "🔄 Actualizando producto...";
 
-            const existente = inventario.find(x => x.nombre.toLowerCase() === n.toLowerCase());
             try {
-                let url = `${SUPABASE_URL}/rest/v1/productos`;
-                let method = "POST";
-                if (existente) { url += `?id=eq.${existente.id}`; method = "PATCH"; }
-
-                const res = await fetch(url, { method: method, headers: headers, body: JSON.stringify({ nombre: n, presentacion: pr, precio: parseFloat(p) }) });
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/productos?id=eq.${prod.id}`, {
+                    method: "PATCH",
+                    headers: headers,
+                    body: JSON.stringify({
+                        nombre: nuevoNombre.trim(),
+                        presentacion: nuevaPresentacion.trim(),
+                        precio: parseFloat(nuevoPrecio)
+                    })
+                });
                 if (!res.ok) throw new Error();
-
-                document.getElementById('prod-nombre').value = '';
-                document.getElementById('prod-presentacion').value = '';
-                document.getElementById('prod-precio').value = '';
                 await cargarInventarioDesdeNube();
-            } catch (error) { alert("Error al guardar en la base de datos."); }
-        }
-
-        async function eliminarProductoNube(id, event) {
-            event.stopPropagation();
-            if (!confirm("¿Eliminar este producto de la nube?")) return;
-            try {
-                const res = await fetch(`${SUPABASE_URL}/rest/v1/productos?id=eq.${id}`, { method: "DELETE", headers: headers });
-                await cargarInventarioDesdeNube();
-            } catch (error) { alert("Error al eliminar."); }
-        }
-
-        function añadirAlCarrito(id) {
-            const p = inventario.find(x => x.id === id);
-            const item = carrito.find(x => x.id === id);
-            if (item) item.cantidad++; else carrito.push({ ...p, cantidad: 1 });
-            actualizarInterfazCarrito();
-        }
-
-        function cambiarCantidad(id, c) {
-            const item = carrito.find(x => x.id === id);
-            if (!item) return;
-            item.cantidad += c;
-            if (item.cantidad <= 0) carrito = carrito.filter(x => x.id !== id);
-            actualizarInterfazCarrito();
-            actualizarModalCarrito();
-        }
-
-        function actualizarInterfazCarrito() {
-            const b = document.getElementById('barra-carrito');
-            if (carrito.length === 0) { b.style.display = 'none'; return; }
-            b.style.display = 'flex';
-            document.getElementById('cant-items-fijo').innerText = carrito.reduce((s, i) => s + i.cantidad, 0);
-            document.getElementById('total-fijo').innerText = carrito.reduce((s, i) => s + (parseFloat(i.precio) * i.cantidad), 0).toFixed(2);
-        }
-
-        function abrirModalCarrito() { document.getElementById('modal-carrito').style.display = 'flex'; actualizarModalCarrito(); }
-        function cerrarModalCarrito() { document.getElementById('modal-carrito').style.display = 'none'; }
-
-        function actualizarModalCarrito() {
-            const c = document.getElementById('lista-items-carrito'); c.innerHTML = '';
-            if (carrito.length === 0) { cerrarModalCarrito(); return; }
-            carrito.forEach(item => {
-                c.innerHTML += `<div class="item-carrito"><div><b>${item.nombre}</b></div><div class="controles-cantidad"><button class="btn-cant" onclick="cambiarCantidad(${item.id}, -1)">-</button><span>${item.cantidad}</span><button class="btn-cant" onclick="cambiarCantidad(${item.id}, 1)">+</button></div></div>`;
-            });
-            document.getElementById('total-modal').innerText = carrito.reduce((s, i) => s + (parseFloat(i.precio) * i.cantidad), 0).toFixed(2) + " Bs.";
-        }
-
-        function enviarPedidoWhatsApp() {
-            let t = `🛒 *NUEVO PEDIDO - BODEGA LA BARATA*\n\n`;
-            carrito.forEach(i => t += `- *${i.nombre}* x${i.cantidad}\n`);
-            window.open(`https://api.whatsapp.com/send?phone=${TELEFONO_BODEGA}&text=${encodeURIComponent(t)}`, '_blank');
-        }
-
-        function filtrarProductos() {
-            const txt = document.getElementById('buscar').value.toLowerCase().trim();
-            renderizarProductos(inventario.filter(p => p.nombre.toLowerCase().includes(txt)));
-        }
-
-        function verificarAcceso() {
-            if (prompt("Contraseña:") === CLAVE_SECRETA) {
-                modoAdminActivo = true;
-                document.getElementById('admin-section').style.display = "block";
-                document.getElementById('btn-entrar').style.display = "none";
-                renderizarProductos();
-            } else alert("Incorrecta.");
-        }
-
-        function cerrarPanel() {
-            modoAdminActivo = false;
-            document.getElementById('admin-section').style.display = "none";
-            document.getElementById('btn-entrar').style.display = "block";
-            renderizarProductos();
-        }
-
-        cargarInventarioDesdeNube();
-    </script>
-</body>
-</html>
+                alert("¡Producto actualizado con éxito!");
+            } catch (error) {
+                alert("Error al actualizar el producto.");
+                document.getElementById('
